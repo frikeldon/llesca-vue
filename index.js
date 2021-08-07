@@ -5,6 +5,7 @@ import FieldDate from './component/field-date/index.js'
 import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
 import StackDraggable from './component/stack-draggable/index.js'
+import ViewListSimple from './component/view-list-simple/index.js'
 
 const components = {
   FieldCheckbox,
@@ -12,7 +13,8 @@ const components = {
   FieldDate,
   FieldNumber,
   FieldText,
-  StackDraggable
+  StackDraggable,
+  ViewListSimple
 }
 
 export { components }

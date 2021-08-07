@@ -4,13 +4,15 @@ import FieldCombo from './component/field-combo/index.js'
 import FieldDate from './component/field-date/index.js'
 import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
+import StackDraggable from './component/stack-draggable/index.js'
 
 const components = {
   FieldCheckbox,
   FieldCombo,
   FieldDate,
   FieldNumber,
-  FieldText
+  FieldText,
+  StackDraggable
 }
 
 export { components }

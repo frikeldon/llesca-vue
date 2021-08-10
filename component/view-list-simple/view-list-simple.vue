@@ -1,7 +1,6 @@
 <script>
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
-import { OdataValue } from 'odata-tools'
 
 function getInitialState () {
   return {
@@ -172,9 +171,6 @@ export default {
 
       this.$emit('loadEnd')
     },
-    isOdataValue (object) {
-      return object instanceof OdataValue
-    },
     handleGoTo (page) {
       const value = Number(page)
       if (!isNaN(value) && value >= 0 && value <= this.totalPages) {
@@ -244,8 +240,7 @@ export default {
       >
         <div
           class="llesca-cell"
-          v-if="isOdataValue(slotProps.content) && typeof slotProps.content.htmlify === 'function'"
-          v-html="slotProps.content.htmlify(slotProps.content.value)"
+          v-odata-content="slotProps.content"
         />
       </slot>
     </template>

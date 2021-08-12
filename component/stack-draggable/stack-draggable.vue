@@ -27,6 +27,7 @@ export default {
   name: 'LlecaStackDraggable',
   components: { 'fura-icon': FuraIcon },
   props: {
+    name: { type: String, default: () => String(Math.random()) },
     primaryKey: { type: String, required: true },
     modelValue: { type: Array, required: true },
     handlerPosition: {
@@ -65,15 +66,15 @@ export default {
     handleDragStart (event, key) {
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.droptAllowed = 'move'
-      event.dataTransfer.setData(DATA_TYPE, key)
+      event.dataTransfer.setData(DATA_TYPE + this.name, key)
     },
     handleDragOver (event) {
-      if (event.dataTransfer.types.includes(DATA_TYPE)) {
+      if (event.dataTransfer.types.includes(DATA_TYPE + this.name)) {
         event.preventDefault()
       }
     },
     handleDrop (event) {
-      const identifier = event.dataTransfer.getData(DATA_TYPE)
+      const identifier = event.dataTransfer.getData(DATA_TYPE + this.name)
       const sourceIndex = this.modelValue.findIndex(item => item[this.primaryKey] === identifier)
       const targetIndex = this.refElements.reduce((accumaletd, value) => (
         value.el.getBoundingClientRect().bottom > event.pageY && value.index < accumaletd

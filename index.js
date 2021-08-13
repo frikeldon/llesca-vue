@@ -6,6 +6,7 @@ import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
 import StackDraggable from './component/stack-draggable/index.js'
 import ViewListSimple from './component/view-list-simple/index.js'
+import ViewListGrouped from './component/view-list-grouped/index.js'
 
 import installOdataContent from './directive/odata-content.js'
 
@@ -16,7 +17,8 @@ const components = {
   FieldNumber,
   FieldText,
   StackDraggable,
-  ViewListSimple
+  ViewListSimple,
+  ViewListGrouped
 }
 
 export { components }

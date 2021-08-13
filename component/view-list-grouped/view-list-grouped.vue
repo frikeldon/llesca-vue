@@ -1,0 +1,267 @@
+<script>
+import FuraDetailsList from 'fura-vue/component/details-list/index.js'
+import { odataEquals, odataFilter } from 'odata-tools'
+
+function findLastIndex (array, predicate) {
+  for (let index = array.length - 1; index >= 0; index -= 1) {
+    if (predicate(array[index], index, array)) {
+      return index
+    }
+  }
+  return -1
+}
+
+function getInitialState () {
+  return {
+    rows: [],
+    groups: [],
+    groupData: [],
+    selectedIndices: [],
+    currentPage: 0,
+    entitesLoaded: 0
+  }
+}
+
+export default {
+  name: 'LlescaViewListGrouped',
+  components: { 'fura-details-list': FuraDetailsList },
+  props: {
+    /** Nombre de la colección en el esquema. */
+    entitySet: { type: String, required: true },
+    /** Propiedades a agrupar. */
+    groupedProperties: { type: Array, required: true },
+    /** Propiedades agrupadas con formula. */
+    aggregatedProperties: { type: Array, required: true },
+    /**
+     * Campos a expandir.
+     * Si el valor es true, expande automaticamente todos los campos de la vista.
+     * Si el valor es false, no expande ningun camp.
+     * Si no el valor ha de ser una lista con las propiedades a expandir.
+     */
+    expand: { type: [Array, Boolean], default: false },
+    /** Indice si las celdas de las columnas agrupadas se tienen que esconder en las filas de detalle */
+    hideGroupedColsInDetails: { type: Boolean, default: false },
+    /** Filtro OData a aplicar */
+    filter: { type: [String, Object], default: null },
+    /** Indica si la tabla debe dibujarse en modo compacto. */
+    compact: { type: Boolean, default: false },
+    /**
+     * Controla el tipo de selección de filas. Si no está definido, no hay control de selcción.
+     * @values multiple, simple, safe
+     */
+    selection: { type: String, default: '' }
+  },
+  data: getInitialState,
+  emits: [
+    /** Inicio de la carga de datos. */
+    'loadStart',
+    /** Fin de la carga de datos. */
+    'loadEnd',
+    /**
+     * Cambio en la seleccion de elementos.
+     * @property {Array} selectedItems Los elementos seleccionados.
+     */
+    'updateSelectedItems',
+    /**
+     * Se genera cuando el usuario hace clic sobre una celda de la cabecera.
+     * @property {number} index Índice de la columna pulsada.
+     */
+    'clickHeader',
+    /**
+     * Se genera cuando el usuario hace clic sobre una celda.
+     * @property {object} coords Objeto ({ row, column }) con el número de fila y columna pulsada.
+     */
+    'clickCell'
+  ],
+  computed: {
+    detailsListColumns () {
+      const { $llesca, entitySet, groupedProperties, aggregatedProperties } = this
+      return [
+        ...groupedProperties.map(definition => ({
+          key: definition.key,
+          title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
+          aggregated: true
+        })),
+        ...aggregatedProperties.map(definition => ({
+          key: definition.$count
+            ? `${entitySet}_count`
+            : definition.key,
+          title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
+          false: true
+        }))
+      ]
+    }
+  },
+  methods: {
+    async loadDetailData () {
+      const entity = this.$llesca[this.entitySet]
+      const options = {
+        $select: [
+          ...this.groupedProperties,
+          ...this.aggregatedProperties.filter(aggregated => !aggregated.$count)
+        ].map(prop => prop.key),
+        $filter: this.filter ? odataFilter(this.filter) : undefined,
+        $orderby: this.groupedProperties.map(prop => `${prop.key} ${prop.direction || 'asc'}`).join(),
+        $expand: this.expand
+      }
+      const response = await entity.getEntitySet(options)
+      this.rows = response.value
+    },
+    async loadGroupedData () {
+      const entity = this.$llesca[this.entitySet]
+
+      const filter = this.filter ? `filter(${odataFilter(this.filter)})/` : ''
+
+      const grouped = this.groupedProperties.map(prop => {
+        if (this.expand === true || (Array.isArray(this.expand) && this.expand.includes(prop.key))) {
+          const property = entity.getProperty(prop.key)
+          if (property.expand && property.expandText) {
+            return `${prop.key},${property.expand}/${property.expandText}`
+          }
+        }
+        return `${prop.key}`
+      }).join()
+      const aggregate = this.aggregatedProperties.map(definition => definition.$count
+        ? `$count as ${this.entitySet}_count`
+        : `${definition.key} with ${definition.aggregation} as ${definition.key + definition.aggregation}`
+      ).join()
+
+      const groupby = aggregate
+        ? `groupby((${grouped}), aggregate(${aggregate}))`
+        : `groupby((${grouped}))`
+
+      const $apply = filter + groupby
+
+      const $orderby = this.groupedProperties.map(prop => `${prop.key} ${prop.direction || 'asc'}`).join()
+
+      const response = await entity.getEntitySet({ $apply, $orderby })
+
+      for (const aggregated of this.aggregatedProperties) {
+        if (!aggregated.$count && aggregated.aggregation !== 'countdistinct') {
+          for (const row of response.value) {
+            const name = aggregated.key + aggregated.aggregation
+            row[aggregated.key] = row[name]
+            delete row[name]
+          }
+        }
+      }
+
+      this.groupData = entity.replaceOdataValues(response.value)
+
+      for (const aggregated of this.aggregatedProperties) {
+        if (!aggregated.$count && aggregated.aggregation === 'countdistinct') {
+          for (const row of this.groupData) {
+            const name = aggregated.key + aggregated.aggregation
+            row[aggregated.key] = row[name]
+            delete row[name]
+          }
+        }
+      }
+    },
+    async loadData () {
+      this.$emit('loadStart')
+
+      await Promise.all([
+        this.loadDetailData(),
+        this.loadGroupedData()
+      ])
+
+      const groupKeys = this.groupedProperties.map(property => property.key)
+      const groups = []
+
+      for (const data of this.groupData) {
+        const startIndex = this.rows.findIndex(row => groupKeys.every(key => odataEquals(row[key], data[key])))
+        const endIndex = findLastIndex(this.rows, row => groupKeys.every(key => odataEquals(row[key], data[key])))
+        groups.push({
+          name: data[groupKeys[0]],
+          startIndex,
+          count: endIndex - (startIndex - 1),
+          level: 0
+        })
+      }
+
+      this.groups = groups
+
+      this.$emit('loadEnd')
+    },
+    getBodyHeaderContent (props) {
+      return this.groupData[props?.groupIndex]?.[props?.column?.key]
+    },
+    updateSelectedIndices (selectedIndices) {
+      if (!(
+        this.selectedIndices.length === selectedIndices.length &&
+        this.selectedIndices.every((item, index) => item === selectedIndices[index])
+      )) {
+        this.selectedIndices = selectedIndices
+        const items = selectedIndices.map(index => this.rows[index])
+        this.$emit('updateSelectedItems', items)
+      }
+    }
+  },
+  watch: {
+  },
+  async mounted () {
+    await this.loadData()
+  }
+}
+</script>
+
+<template>
+  <fura-details-list
+    without-group-header
+    auto-layout="auto"
+    :columns="detailsListColumns"
+    :data="rows"
+    :groups="groups"
+    :compact="compact"
+    :selection="selection"
+    :selected-indices="selectedIndices"
+    @update:selected-indices="updateSelectedIndices"
+    @clickHeader="$emit('clickHeader', $event)"
+    @clickCell="$emit('clickCell', $event)"
+  >
+    <template #default="slotProps">
+      <slot
+        :row-index="slotProps.rowIndex"
+        :column-index="slotProps.columnIndex"
+        :content="slotProps.content"
+        :column="slotProps.column"
+      >
+        <span v-if="hideGroupedColsInDetails && slotProps.column.aggregated" />
+        <div
+          v-else
+          class="llesca-cell"
+          v-odata-content="slotProps.content"
+        />
+      </slot>
+    </template>
+    <template #bodyHeader="slotProps">
+      <slot
+        name="bodyHeader"
+        :group-index="slotProps?.groupIndex"
+        :group="slotProps?.group"
+        :column-index="slotProps?.columnIndex"
+        :column="slotProps?.column"
+        :data="slotProps?.data"
+      >
+        <b
+          v-odata-content="getBodyHeaderContent(slotProps)"
+        />
+      </slot>
+    </template>
+    <template #header="slotProps">
+      <!--
+        @slot Contenido de una cabecera
+        @binding {object} column Referencia a la definición de la columna.
+        @binding {number} index Índice de la definición de la columna.
+      -->
+      <slot
+        name="header"
+        :column="slotProps.column"
+        :index="slotProps.index"
+      />
+    </template>
+  </fura-details-list>
+</template>
+
+<style lang="less" scoped src="./view-list-grouped.less"></style>

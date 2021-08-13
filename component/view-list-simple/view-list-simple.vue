@@ -98,7 +98,7 @@ export default {
         const order = orderby?.find(order => order.key === key)
         return {
           key,
-          title: property.label,
+          title: property?.label,
           icon: getOrderIcon(order)
         }
       })

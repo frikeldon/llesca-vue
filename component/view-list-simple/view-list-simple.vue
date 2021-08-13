@@ -137,32 +137,15 @@ export default {
 
       const options = {
         $select: this.selectKeys,
+        $expand: this.expand ?? undefined,
+        $filter: this.filter ?? undefined,
+        $top: this.isPaginated ? this.pageSize : undefined,
+        $skip: this.isPaginated ? this.currentPage * this.pageSize : undefined,
+        $orderby: this.orderby
+          ?.filter(order => ['asc', 'desc'].includes(order.direction))
+          .map(order => `${order.key} ${order.direction}`)
+          .join() ?? undefined,
         $count: true
-      }
-
-      if (this.isPaginated) {
-        options.$top = this.pageSize
-        options.$skip = this.currentPage * this.pageSize
-      }
-
-      if (this.expand) {
-        const expandFilter = Array.isArray(this.expand)
-          ? this.expand
-          : this.selectKeys
-
-        options.$expand = this.$llesca[this.entitySet].properties
-          .filter(property => property.expand && expandFilter.includes(property.key))
-          .map(property => `${property.expand}($select=${property.expandText})`)
-      }
-
-      if (this.filter) {
-        options.$filter = this.filter
-      }
-
-      if (Array.isArray(this.orderby)) {
-        options.$orderby = this.orderby
-          .filter(order => ['asc', 'desc'].includes(order.direction))
-          .map(order => `${order.key} ${order.direction}`).join()
       }
 
       const response = await this.$llesca[this.entitySet].getEntitySet(options)

@@ -1,11 +1,15 @@
 <script>
 import FuraDatePicker from 'fura-vue/component/date-picker/index.js'
 import { OdataDate } from 'odata-tools'
+import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldDate',
+  mixins: [Field],
   components: { 'fura-date-picker': FuraDatePicker },
   props: {
+    /** Nombre del campo en el formulario. */
+    name: { type: String, required: true },
     /** Etiqueta que se muestra encima del campo de formulario asociado. */
     label: { type: String, default: '' },
     /** La descripción se muestra debajo del campo del formulario asociado para proporcionar detalles adicionales sobre qué valor ingresar. */
@@ -214,7 +218,7 @@ export default {
     :parse="parse || modelValue?.parse || undefined"
     :stringify="formatify || modelValue?.formatify || undefined"
     :stringify-focus="stringify || modelValue?.stringify || undefined"
-    @update:modelValue="handleUpdateModelValue"
+    @update:model-value="handleUpdateModelValue"
     @focus="$emit('focus', $event)"
     @blur="$emit('blur', $event)"
   />

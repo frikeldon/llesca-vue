@@ -1,11 +1,15 @@
 <script>
 import FuraCheckbox from 'fura-vue/component/checkbox/index.js'
 import { OdataBool } from 'odata-tools'
+import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldText',
+  mixins: [Field],
   components: { 'fura-checkbox': FuraCheckbox },
   props: {
+    /** Nombre del campo en el formulario. */
+    name: { type: String, required: true },
     /** El valor de Checkbox. */
     modelValue: { type: [Boolean, OdataBool], default: null },
     /**
@@ -109,7 +113,7 @@ export default {
     :disabled="disabled"
     :readonly="readonly"
     :model-value="rawValue"
-    @update:modelValue="handleUpdateModelValue"
+    @update:model-value="handleUpdateModelValue"
     @update:indeterminate="$emit('update:indeterminate', $event)"
   />
 </template>

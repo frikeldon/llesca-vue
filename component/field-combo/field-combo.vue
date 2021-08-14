@@ -1,11 +1,15 @@
 <script>
 import FuraComboBox from 'fura-vue/component/combo-box/index.js'
 import { OdataLookup } from 'odata-tools'
+import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldCombo',
+  mixins: [Field],
   components: { 'fura-combo-box': FuraComboBox },
   props: {
+    /** Nombre del campo en el formulario. */
+    name: { type: String, required: true },
     /** Etiqueta que se muestra encima del campo de formulario asociado. */
     label: { type: String, default: '' },
     /** La descripción se muestra debajo del campo del formulario asociado para proporcionar detalles adicionales sobre qué valor ingresar. */
@@ -38,6 +42,8 @@ export default {
     placeholder: { type: String, default: null },
     /** Indica si el desplazamiento del Select debe hacerse sin animación. */
     immediateScroll: { type: Boolean, default: false },
+    /** Indica si las opciones deben ocultar la caja de selección cuando el estado es multiple. */
+    hideCheckbox: { type: Boolean, default: false },
     /** La cantidad máxima de opciones que se pueden seleccionar. */
     maxSelectedOptions: { type: Number, default: -1 },
     /**
@@ -162,10 +168,11 @@ export default {
     :accent-insensitive="accentInsensitive"
     :placeholder="placeholder"
     :immediate-scroll="immediateScroll"
+    :hide-checkbox="hideCheckbox"
     :max-selected-options="maxSelectedOptions"
     :error-message="errorMessage"
     :model-value="rawValue"
-    @update:modelValue="handleUpdateModelValue"
+    @update:model-value="handleUpdateModelValue"
     @click="$emit('click')"
     @focus="$emit('focus', $event)"
     @blur="$emit('blur', $event)"

@@ -1,11 +1,15 @@
 <script>
 import FuraTextField from 'fura-vue/component/text-field/index.js'
 import { OdataValue } from 'odata-tools'
+import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldText',
+  mixins: [Field],
   components: { 'fura-text-field': FuraTextField },
   props: {
+    /** Nombre del campo en el formulario. */
+    name: { type: String, required: true },
     /** Etiqueta que se muestra encima del campo de formulario asociado. */
     label: { type: String, default: '' },
     /** La descripción se muestra debajo del campo del formulario asociado para proporcionar detalles adicionales sobre qué valor ingresar. */
@@ -167,7 +171,7 @@ export default {
     :unresizable="unresizable"
     :auto-adjust-height="autoAdjustHeight"
     :model-value="rawValue"
-    @update:modelValue="handleUpdateModelValue"
+    @update:model-value="handleUpdateModelValue"
     @click="$emit('click')"
     @focus="$emit('focus', $event)"
     @blur="$emit('blur', $event)"

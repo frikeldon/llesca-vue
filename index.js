@@ -4,6 +4,7 @@ import FieldCombo from './component/field-combo/index.js'
 import FieldDate from './component/field-date/index.js'
 import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
+import Form from './component/form/index.js'
 import StackDraggable from './component/stack-draggable/index.js'
 import ViewListSimple from './component/view-list-simple/index.js'
 import ViewListGrouped from './component/view-list-grouped/index.js'
@@ -16,6 +17,7 @@ const components = {
   FieldDate,
   FieldNumber,
   FieldText,
+  Form,
   StackDraggable,
   ViewListSimple,
   ViewListGrouped

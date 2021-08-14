@@ -1,11 +1,15 @@
 <script>
 import FuraNumberField from 'fura-vue/component/number-field/index.js'
 import { OdataNumber } from 'odata-tools'
+import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldNumber',
+  mixins: [Field],
   components: { 'fura-number-field': FuraNumberField },
   props: {
+    /** Nombre del campo en el formulario. */
+    name: { type: String, required: true },
     /** Etiqueta que se muestra encima del campo de formulario asociado. */
     label: { type: String, default: '' },
     /** La descripción se muestra debajo del campo del formulario asociado para proporcionar detalles adicionales sobre qué valor ingresar. */
@@ -228,7 +232,7 @@ export default {
     :stringify-focus="stringify || modelValue?.stringify || undefined"
     :align="align"
     :align-focus="alignFocus"
-    @update:modelValue="handleUpdateModelValue"
+    @update:model-value="handleUpdateModelValue"
     @click="$emit('click')"
     @focus="$emit('focus', $event)"
     @blur="$emit('blur', $event)"

@@ -101,7 +101,7 @@ export default {
       if (!this.fields.has(field.name)) {
         console.warn(`Field '${field.name}' not found in the collection`)
       } else {
-        const unwatch = this.fields.get(field.name)
+        const { unwatch } = this.fields.get(field.name)
         unwatch()
         this.fields.delete(field.name)
       }

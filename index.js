@@ -1,7 +1,10 @@
 import { Odata, OdataEntity } from 'odata-tools'
 import FieldCheckbox from './component/field-checkbox/index.js'
 import FieldCombo from './component/field-combo/index.js'
+import FieldComboAsync from './component/field-combo-async/index.js'
 import FieldDate from './component/field-date/index.js'
+import FieldDictionary from './component/field-dictionary/index.js'
+import FieldDictionaryAsync from './component/field-dictionary-async/index.js'
 import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
 import Form from './component/form/index.js'
@@ -14,7 +17,10 @@ import installOdataContent from './directive/odata-content.js'
 const components = {
   FieldCheckbox,
   FieldCombo,
+  FieldComboAsync,
   FieldDate,
+  FieldDictionary,
+  FieldDictionaryAsync,
   FieldNumber,
   FieldText,
   Form,

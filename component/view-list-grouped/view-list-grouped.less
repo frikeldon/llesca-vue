@@ -1,3 +1,5 @@
+@import "fura-vue/theme/color.less";
+
 .llesca-cell {
   box-sizing: border-box;
   min-height: 42px;
@@ -19,4 +21,9 @@
   .fura-right & {
     justify-content: flex-end;
   }
+}
+
+.llesca-totals::v-deep(thead[data-type="body-header"][data-level="0"] tr) {
+  background-color: @neutralLighter;
+  border-bottom: 1px solid @themePrimary;
 }

@@ -39,7 +39,9 @@ export default {
      * Si no el valor ha de ser una lista con las propiedades a expandir.
      */
     expand: { type: [Array, Boolean], default: false },
-    /** Indice si las celdas de las columnas agrupadas se tienen que esconder en las filas de detalle */
+    /** Indica si debe mostrarse una fila con los totales generales. */
+    allAggregated: { type: Boolean, default: false },
+    /** Indica si las celdas de las columnas agrupadas se tienen que esconder en las filas de detalle. */
     hideGroupedColsInDetails: { type: Boolean, default: false },
     /** Filtro OData a aplicar */
     filter: { type: [String, Object], default: null },
@@ -136,6 +138,12 @@ export default {
 
       const response = await entity.getEntitySet({ $apply, $orderby })
 
+      if (this.allAggregated) {
+        const $apply = `${filter}aggregate(${aggregate})`
+        const responseAggregated = await entity.getEntitySet({ $apply })
+        response.value.unshift(responseAggregated.value[0])
+      }
+
       for (const aggregated of this.aggregatedProperties) {
         if (!aggregated.$count && aggregated.aggregation !== 'countdistinct') {
           for (const row of response.value) {
@@ -167,16 +175,25 @@ export default {
       ])
 
       const groupKeys = this.groupedProperties.map(property => property.key)
-      const groups = []
+      const groups = this.allAggregated
+        ? [{
+            name: 'allAggregated',
+            startIndex: 0,
+            count: 0,
+            level: 0
+          }]
+        : []
+      const level = this.allAggregated ? 1 : 0
+      const groupedData = this.allAggregated ? this.groupData.slice(1) : this.groupData
 
-      for (const data of this.groupData) {
+      for (const data of groupedData) {
         const startIndex = this.rows.findIndex(row => groupKeys.every(key => odataEquals(row[key], data[key])))
         const endIndex = findLastIndex(this.rows, row => groupKeys.every(key => odataEquals(row[key], data[key])))
         groups.push({
           name: data[groupKeys[0]],
           startIndex,
           count: endIndex - (startIndex - 1),
-          level: 0
+          level
         })
       }
 
@@ -208,6 +225,7 @@ export default {
 
 <template>
   <fura-details-list
+    :class="allAggregated ? 'llesca-totals' : undefined"
     without-group-header
     auto-layout="auto"
     :columns="detailsListColumns"

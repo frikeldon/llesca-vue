@@ -34,10 +34,14 @@ export default {
   },
   mounted () {
     this.form = ancestorOfType(CollectionField, this.$parent)
-    this.form.registerField(this)
+    if (this.form) {
+      this.form.registerField(this)
+    }
   },
   beforeUnmount () {
-    this.form.unregisterField(this)
-    this.form = null
+    if (this.form) {
+      this.form.unregisterField(this)
+      this.form = null
+    }
   }
 }

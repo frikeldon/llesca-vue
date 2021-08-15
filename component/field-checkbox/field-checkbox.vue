@@ -9,7 +9,7 @@ export default {
   components: { 'fura-checkbox': FuraCheckbox },
   props: {
     /** Nombre del campo en el formulario. */
-    name: { type: String, required: true },
+    name: { type: String, default: null },
     /** El valor de Checkbox. */
     modelValue: { type: [Boolean, OdataBool], default: null },
     /**

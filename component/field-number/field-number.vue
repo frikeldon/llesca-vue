@@ -9,7 +9,7 @@ export default {
   components: { 'fura-number-field': FuraNumberField },
   props: {
     /** Nombre del campo en el formulario. */
-    name: { type: String, required: true },
+    name: { type: String, default: null },
     /** Etiqueta que se muestra encima del campo de formulario asociado. */
     label: { type: String, default: '' },
     /** La descripción se muestra debajo del campo del formulario asociado para proporcionar detalles adicionales sobre qué valor ingresar. */

@@ -14,10 +14,10 @@ function getInitialState () {
 function getOrderIcon (order) {
   if (order) {
     if (order?.direction === 'asc') {
-      return 'SortUp'
+      return 'SortDown'
     }
     if (order?.direction === 'desc') {
-      return 'SortDown'
+      return 'SortUp'
     }
   }
   return null

@@ -28,6 +28,8 @@ export default {
   props: {
     /** Nombre de la colección en el esquema. */
     entitySet: { type: String, required: true },
+    /** Propiedades de la entidad a consultar. */
+    requiredProperties: { type: Array, default: () => [] },
     /** Propiedades a agrupar. */
     groupedProperties: { type: Array, required: true },
     /** Propiedades agrupadas con formula. */
@@ -97,11 +99,15 @@ export default {
   methods: {
     async loadDetailData () {
       const entity = this.$llesca[this.entitySet]
-      const options = {
-        $select: [
+      const selectKeys = new Set([
+        ...this.requiredProperties,
+        ...[
           ...this.groupedProperties,
           ...this.aggregatedProperties.filter(aggregated => !aggregated.$count)
-        ].map(prop => prop.key),
+        ].map(prop => prop.key)
+      ])
+      const options = {
+        $select: Array.from(selectKeys),
         $filter: this.filter ? odataFilter(this.filter) : undefined,
         $orderby: this.groupedProperties.map(prop => `${prop.key} ${prop.direction || 'asc'}`).join(),
         $expand: this.expand

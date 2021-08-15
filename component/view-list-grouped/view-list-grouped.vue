@@ -100,6 +100,9 @@ export default {
     async loadDetailData () {
       const entity = this.$llesca[this.entitySet]
       const selectKeys = new Set([
+        ...entity.properties
+          .filter(property => property.primary)
+          .map(property => property.key),
         ...this.requiredProperties,
         ...[
           ...this.groupedProperties,

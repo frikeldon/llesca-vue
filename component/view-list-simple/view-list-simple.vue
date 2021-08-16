@@ -134,6 +134,7 @@ export default {
      */
     async loadData () {
       this.$emit('loadStart')
+      const entity = this.$llesca[this.entitySet]
 
       const options = {
         $select: this.selectKeys,
@@ -143,12 +144,23 @@ export default {
         $skip: this.isPaginated ? this.currentPage * this.pageSize : undefined,
         $orderby: this.orderby
           ?.filter(order => ['asc', 'desc'].includes(order.direction))
-          .map(order => `${order.key} ${order.direction}`)
+          .map(order => {
+            if (this.expand === true || (Array.isArray(this.expand) && this.expand.includes(order.key))) {
+              const property = entity.getProperty(order.key)
+              if (property.expand && property.expandText) {
+                return `${property.expand}/${property.expandText} ${order.direction}`
+              } else {
+                return `${order.key} ${order.direction}`
+              }
+            } else {
+              return `${order.key} ${order.direction}`
+            }
+          })
           .join() ?? undefined,
         $count: true
       }
 
-      const response = await this.$llesca[this.entitySet].getEntitySet(options)
+      const response = await entity.getEntitySet(options)
       this.rows = response.value
       this.entitesLoaded = response['@odata.count']
 

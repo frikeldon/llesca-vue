@@ -45,7 +45,7 @@ export default {
     /** Propiedades a agrupar. */
     groupedProperties: { type: Array, required: true },
     /** Propiedades agrupadas con formula. */
-    aggregatedProperties: { type: Array, required: true },
+    detailProperties: { type: Array, required: true },
     /**
      * Campos a expandir.
      * Si el valor es true, expande automaticamente todos los campos de la vista.
@@ -91,7 +91,7 @@ export default {
   ],
   computed: {
     detailsListColumns () {
-      const { $llesca, entitySet, groupedProperties, aggregatedProperties } = this
+      const { $llesca, entitySet, groupedProperties, detailProperties } = this
       return [
         ...groupedProperties.map(definition => ({
           key: definition.key,
@@ -100,7 +100,7 @@ export default {
           align: definition.align,
           aggregated: true
         })),
-        ...aggregatedProperties.map(definition => ({
+        ...detailProperties.map(definition => ({
           key: definition.$count
             ? `${entitySet}_count`
             : definition.key,
@@ -136,7 +136,7 @@ export default {
         ...this.requiredProperties,
         ...[
           ...this.groupedProperties,
-          ...this.aggregatedProperties.filter(aggregated => !aggregated.$count)
+          ...this.detailProperties.filter(property => !property.$count)
         ].map(prop => prop.key)
       ])
       const options = {
@@ -162,10 +162,13 @@ export default {
         }
         return `${prop.key}`
       }).join()
-      const aggregate = this.aggregatedProperties.map(definition => definition.$count
-        ? `$count as ${this.entitySet}_count`
-        : `${definition.key} with ${definition.aggregation} as ${definition.key + definition.aggregation}`
-      ).join()
+      const aggregate = this.detailProperties
+        .filter(property => property.$count || property.aggregation)
+        .map(property => property.$count
+          ? `$count as ${this.entitySet}_count`
+          : `${property.key} with ${property.aggregation} as ${property.key + property.aggregation}`
+        )
+        .join()
 
       const groupby = aggregate
         ? `groupby((${grouped}), aggregate(${aggregate}))`
@@ -182,11 +185,11 @@ export default {
         response.value.unshift(responseAggregated.value[0])
       }
 
-      for (const aggregated of this.aggregatedProperties) {
-        if (!aggregated.$count && aggregated.aggregation !== 'countdistinct') {
+      for (const property of this.detailProperties) {
+        if (!property.$count && property.aggregation && property.aggregation !== 'countdistinct') {
           for (const row of response.value) {
-            const name = aggregated.key + aggregated.aggregation
-            row[aggregated.key] = row[name]
+            const name = property.key + property.aggregation
+            row[property.key] = row[name]
             delete row[name]
           }
         }
@@ -194,11 +197,11 @@ export default {
 
       this.groupData = entity.replaceOdataValues(response.value)
 
-      for (const aggregated of this.aggregatedProperties) {
-        if (!aggregated.$count && aggregated.aggregation === 'countdistinct') {
+      for (const property of this.detailProperties) {
+        if (!property.$count && property.aggregation && property.aggregation === 'countdistinct') {
           for (const row of this.groupData) {
-            const name = aggregated.key + aggregated.aggregation
-            row[aggregated.key] = row[name]
+            const name = property.key + property.aggregation
+            row[property.key] = row[name]
             delete row[name]
           }
         }

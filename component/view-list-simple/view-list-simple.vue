@@ -59,7 +59,13 @@ export default {
      * Controla el tipo de selección de filas. Si no está definido, no hay control de selcción.
      * @values multiple, simple, safe
      */
-    selection: { type: String, default: '' }
+    selection: { type: String, default: '' },
+    paginationPosition: {
+      type: String,
+      default: 'bottomCenter',
+      validator: paginationPosition =>
+        ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
+    }
   },
   data: getInitialState,
   emits: [
@@ -115,6 +121,29 @@ export default {
         ...viewProperties
       ])
       return [...keys]
+    },
+    paginationOnTop () {
+      const { isPaginated, paginationPosition } = this
+      return isPaginated && ['topLeft', 'topCenter', 'topRight'].includes(paginationPosition)
+    },
+    paginationOnBottom () {
+      const { isPaginated, paginationPosition } = this
+      return isPaginated && ['bottomLeft', 'bottomCenter', 'bottomRight'].includes(paginationPosition)
+    },
+    paginationClass () {
+      switch (this.paginationPosition) {
+        case 'topLeft':
+        case 'bottomLeft':
+          return 'llesca-left'
+        case 'topCenter':
+        case 'bottomCenter':
+          return 'llesca-center'
+        case 'topRight':
+        case 'bottomRight':
+          return 'llesca-right'
+        default:
+          return undefined
+      }
     }
   },
   methods: {
@@ -197,8 +226,9 @@ export default {
 
 <template>
   <fura-spin-nav
-    v-if="isPaginated"
+    v-if="paginationOnTop"
     class="llesca-navigation"
+    :class="paginationClass"
     :current="currentPage + 1"
     :total="totalPages"
     end-button
@@ -252,6 +282,26 @@ export default {
       />
     </template>
   </fura-details-list>
+
+  <fura-spin-nav
+    v-if="paginationOnBottom"
+    class="llesca-navigation"
+    :class="paginationClass"
+    :current="currentPage + 1"
+    :total="totalPages"
+    end-button
+    start-button
+    editable
+    :disable-prev="currentPage <= 0"
+    :disable-next="currentPage + 1 >= totalPages"
+    :disable-start="currentPage <= 0"
+    :disable-end="currentPage + 1 >= totalPages"
+    @prev="currentPage -= 1"
+    @next="currentPage += 1"
+    @start="currentPage = 0"
+    @end="currentPage = totalPages - 1"
+    @go-to="handleGoTo"
+  />
 </template>
 
 <style lang="less" scoped src="./view-list-simple.less"></style>

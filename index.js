@@ -1,4 +1,3 @@
-import { Odata, OdataEntity } from 'odata-tools'
 import FieldCheckbox from './component/field-checkbox/index.js'
 import FieldCombo from './component/field-combo/index.js'
 import FieldComboAsync from './component/field-combo-async/index.js'
@@ -13,6 +12,8 @@ import ViewListSimple from './component/view-list-simple/index.js'
 import ViewListGrouped from './component/view-list-grouped/index.js'
 
 import installOdataContent from './directive/odata-content.js'
+
+import Llesca from './llesca.js'
 
 const components = {
   FieldCheckbox,
@@ -42,19 +43,7 @@ export default function install (app, {
     app.component(`${prefix}-${kebabName}`, components[name])
   }
 
-  const odata = new Odata(apiUrl)
-  const entries = [['$odata', odata]]
-  for (const name in schema) {
-    const { endpoint, properties, types } = schema[name]
-    entries.push([name, new OdataEntity({
-      odata,
-      endpoint,
-      properties,
-      types: { ...globalTypes, ...types }
-    })])
-  }
-
   installOdataContent(app)
 
-  app.config.globalProperties.$llesca = Object.fromEntries(entries)
+  app.config.globalProperties.$llesca = new Llesca(apiUrl, schema, globalTypes)
 }

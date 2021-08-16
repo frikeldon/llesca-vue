@@ -22,6 +22,18 @@ function getInitialState () {
   }
 }
 
+function getOrderIcon (order) {
+  if (order) {
+    if (order?.direction === 'asc') {
+      return 'SortDown'
+    }
+    if (order?.direction === 'desc') {
+      return 'SortUp'
+    }
+  }
+  return null
+}
+
 export default {
   name: 'LlescaViewListGrouped',
   components: { 'fura-details-list': FuraDetailsList },
@@ -84,6 +96,7 @@ export default {
         ...groupedProperties.map(definition => ({
           key: definition.key,
           title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
+          icon: getOrderIcon(definition),
           aggregated: true
         })),
         ...aggregatedProperties.map(definition => ({
@@ -91,7 +104,7 @@ export default {
             ? `${entitySet}_count`
             : definition.key,
           title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
-          false: true
+          aggregated: false
         }))
       ]
     },

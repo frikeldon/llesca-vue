@@ -97,6 +97,7 @@ export default {
           key: definition.key,
           title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
           icon: getOrderIcon(definition),
+          align: definition.align,
           aggregated: true
         })),
         ...aggregatedProperties.map(definition => ({
@@ -104,6 +105,7 @@ export default {
             ? `${entitySet}_count`
             : definition.key,
           title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
+          align: definition.align,
           aggregated: false
         }))
       ]
@@ -299,6 +301,7 @@ export default {
         :data="slotProps?.data"
       >
         <b
+          class="llesca-cell"
           v-odata-content="getBodyHeaderContent(slotProps)"
         />
       </slot>

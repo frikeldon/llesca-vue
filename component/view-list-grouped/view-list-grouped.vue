@@ -94,6 +94,21 @@ export default {
           false: true
         }))
       ]
+    },
+    orderbyExpression () {
+      const { $llesca, entitySet, groupedProperties, expand } = this
+      return groupedProperties.map(prop => {
+        if (expand === true || (Array.isArray(expand) && expand.includes(prop.key))) {
+          const property = $llesca[entitySet].getProperty(prop.key)
+          if (property.expand && property.expandText) {
+            return `${property.expand}/${property.expandText} ${prop.direction || 'asc'}`
+          } else {
+            return `${prop.key} ${prop.direction || 'asc'}`
+          }
+        } else {
+          return `${prop.key} ${prop.direction || 'asc'}`
+        }
+      }).join()
     }
   },
   methods: {
@@ -112,7 +127,7 @@ export default {
       const options = {
         $select: Array.from(selectKeys),
         $filter: this.filter ? odataFilter(this.filter) : undefined,
-        $orderby: this.groupedProperties.map(prop => `${prop.key} ${prop.direction || 'asc'}`).join(),
+        $orderby: this.orderbyExpression,
         $expand: this.expand
       }
       const response = await entity.getEntitySet(options)
@@ -141,11 +156,10 @@ export default {
         ? `groupby((${grouped}), aggregate(${aggregate}))`
         : `groupby((${grouped}))`
 
-      const $apply = filter + groupby
-
-      const $orderby = this.groupedProperties.map(prop => `${prop.key} ${prop.direction || 'asc'}`).join()
-
-      const response = await entity.getEntitySet({ $apply, $orderby })
+      const response = await entity.getEntitySet({
+        $apply: filter + groupby,
+        $orderby: this.orderbyExpression
+      })
 
       if (this.allAggregated) {
         const $apply = `${filter}aggregate(${aggregate})`

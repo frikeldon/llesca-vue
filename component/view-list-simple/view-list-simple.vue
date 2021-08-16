@@ -99,13 +99,14 @@ export default {
     },
     detailsListColumns () {
       const { $llesca, entitySet, viewProperties, orderby } = this
-      return viewProperties.map(key => {
-        const property = $llesca[entitySet].getProperty(key)
-        const order = orderby?.find(order => order.key === key)
+      return viewProperties.map(definition => {
+        const property = $llesca[entitySet].getProperty(definition.key)
+        const order = orderby?.find(order => order.key === definition.key)
         return {
-          key,
+          key: definition.key,
           title: property?.label,
-          icon: getOrderIcon(order)
+          icon: getOrderIcon(order),
+          align: definition.align
         }
       })
     },
@@ -118,7 +119,7 @@ export default {
       const keys = new Set([
         ...primaryProperties,
         ...requiredProperties,
-        ...viewProperties
+        ...viewProperties.map(property => property.key)
       ])
       return [...keys]
     },

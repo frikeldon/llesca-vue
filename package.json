@@ -7,15 +7,27 @@
     "type": "git",
     "url": "https://github.com/frikeldon/llesca-vue.git"
   },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
   "devDependencies": {
+    "@vue/compiler-sfc": "^3.2.4",
+    "css-loader": "^6.2.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-vue": "^7.16.0"
+    "eslint-plugin-vue": "^7.16.0",
+    "less": "^4.1.1",
+    "less-loader": "^10.0.1",
+    "mini-css-extract-plugin": "^2.2.0",
+    "vue-loader": "^16.5.0",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.8.0"
   },
   "scripts": {
+    "build": "webpack",
     "lint": "eslint ./**/*.{js,vue}"
   }
 }

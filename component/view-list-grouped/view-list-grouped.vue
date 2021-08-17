@@ -315,10 +315,9 @@ export default {
         :content="slotProps.content"
         :column="slotProps.column"
       >
-        <span v-if="hideGroupedColsInDetails && slotProps.column.aggregated" />
         <div
-          v-else
           class="llesca-cell"
+          :class="{ 'llesca-aggregated': hideGroupedColsInDetails && slotProps.column.aggregated }"
           v-odata-content="slotProps.content"
         />
       </slot>

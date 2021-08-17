@@ -11,6 +11,23 @@ function ancestorOfType (type, vnode) {
   return null
 }
 
+function registerField (name, field) {
+  if (name !== null) {
+    const form = ancestorOfType(CollectionField, field.$parent)
+    if (form) {
+      form.registerField(name, field)
+      return form
+    }
+  }
+  return null
+}
+
+function unregisterField (name, field) {
+  if (field.form) {
+    field.form.unregisterField(name)
+  }
+}
+
 export default {
   props: {
     /** Nombre del campo en el formulario. */
@@ -32,18 +49,17 @@ export default {
     },
     loadData () {}
   },
-  mounted () {
-    if (this.name !== null) {
-      this.form = ancestorOfType(CollectionField, this.$parent)
-      if (this.form) {
-        this.form.registerField(this)
-      }
+  watch: {
+    name (name, oldName) {
+      unregisterField(oldName, this)
+      this.form = registerField(name, this)
     }
   },
+  mounted () {
+    this.form = registerField(this.name, this)
+  },
   beforeUnmount () {
-    if (this.form) {
-      this.form.unregisterField(this)
-      this.form = null
-    }
+    unregisterField(this.name, this)
+    this.form = null
   }
 }

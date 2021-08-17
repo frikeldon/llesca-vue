@@ -85,25 +85,25 @@ export default {
         await field.loadData?.()
       }
     },
-    registerField (field) {
-      if (!field.name || typeof field.name !== 'string') {
+    registerField (name, field) {
+      if (!name || typeof name !== 'string') {
         console.error('Invalid field.')
       } else {
         if (this.fields.has()) {
-          console.warn(`Field '${field.name}' is already registered in the collection`)
+          console.warn(`Field '${name}' is already registered in the collection`)
         }
         const unwatch = field.$watch('modelValue', (newValue, oldValue) =>
-          this.$emit('change', { name: field.name, newValue, oldValue }))
-        this.fields.set(field.name, { field, unwatch })
+          this.$emit('change', { name, newValue, oldValue }))
+        this.fields.set(name, { field, unwatch })
       }
     },
-    unregisterField (field) {
-      if (!this.fields.has(field.name)) {
-        console.warn(`Field '${field.name}' not found in the collection`)
+    unregisterField (name) {
+      if (!this.fields.has(name)) {
+        console.warn(`Field '${name}' not found in the collection`)
       } else {
-        const { unwatch } = this.fields.get(field.name)
+        const { unwatch } = this.fields.get(name)
         unwatch()
-        this.fields.delete(field.name)
+        this.fields.delete(name)
       }
     }
   }

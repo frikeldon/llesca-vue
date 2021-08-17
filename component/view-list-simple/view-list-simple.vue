@@ -196,10 +196,22 @@ export default {
 
       this.$emit('loadEnd')
     },
+    /**
+     * Actualiza la propiedad de pagina actual, y recarga los datos.
+     * @param {number} index Número de pagina empezando por la 0.
+     * @public
+     */
+    goToPage (index) {
+      if (this.isPaginated && index >= 0 && index < this.totalPages) {
+        this.currentPage = index
+        this.updateSelectedIndices([])
+        this.loadData()
+      }
+    },
     handleGoTo (page) {
       const value = Number(page)
-      if (!isNaN(value) && value >= 0 && value <= this.totalPages) {
-        this.currentPage = value - 1
+      if (!isNaN(value) && value > 0 && value <= this.totalPages) {
+        this.goToPage(value - 1)
       }
     },
     updateSelectedIndices (selectedIndices) {
@@ -211,12 +223,6 @@ export default {
         const items = selectedIndices.map(index => this.rows[index])
         this.$emit('updateSelectedItems', items)
       }
-    }
-  },
-  watch: {
-    currentPage () {
-      this.updateSelectedIndices([])
-      this.loadData()
     }
   },
   async mounted () {
@@ -239,10 +245,10 @@ export default {
     :disable-next="currentPage + 1 >= totalPages"
     :disable-start="currentPage <= 0"
     :disable-end="currentPage + 1 >= totalPages"
-    @prev="currentPage -= 1"
-    @next="currentPage += 1"
-    @start="currentPage = 0"
-    @end="currentPage = totalPages - 1"
+    @prev="goToPage(currentPage - 1)"
+    @next="goToPage(currentPage + 1)"
+    @start="goToPage(0)"
+    @end="goToPage(totalPages - 1)"
     @go-to="handleGoTo"
   />
 
@@ -297,10 +303,10 @@ export default {
     :disable-next="currentPage + 1 >= totalPages"
     :disable-start="currentPage <= 0"
     :disable-end="currentPage + 1 >= totalPages"
-    @prev="currentPage -= 1"
-    @next="currentPage += 1"
-    @start="currentPage = 0"
-    @end="currentPage = totalPages - 1"
+    @prev="goToPage(currentPage - 1)"
+    @next="goToPage(currentPage + 1)"
+    @start="goToPage(0)"
+    @end="goToPage(totalPages - 1)"
     @go-to="handleGoTo"
   />
 </template>

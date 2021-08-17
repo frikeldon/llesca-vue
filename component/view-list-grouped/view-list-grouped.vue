@@ -59,6 +59,8 @@ export default {
     hideGroupedColsInDetails: { type: Boolean, default: false },
     /** Filtro OData a aplicar */
     filter: { type: [String, Object], default: null },
+    /** Filtro OData a aplicar */
+    orderby: { type: Array, default: null },
     /** Indica si la tabla debe dibujarse en modo compacto. */
     compact: { type: Boolean, default: false },
     /**
@@ -105,12 +107,13 @@ export default {
             ? `${entitySet}_count`
             : definition.key,
           title: definition.label || $llesca[entitySet].getProperty(definition.key).label,
+          icon: getOrderIcon(this.orderby?.find(order => order.key === definition.key)),
           align: definition.align,
           aggregated: false
         }))
       ]
     },
-    orderbyExpression () {
+    orderbyGroupedExpression () {
       const { $llesca, entitySet, groupedProperties, expand } = this
       return groupedProperties.map(prop => {
         if (expand === true || (Array.isArray(expand) && expand.includes(prop.key))) {
@@ -124,6 +127,32 @@ export default {
           return `${prop.key} ${prop.direction || 'asc'}`
         }
       }).join()
+    },
+    orderbyExpression () {
+      const { $llesca, entitySet, groupedProperties, expand, orderby, orderbyGroupedExpression } = this
+
+      if (orderby) {
+        const detailOrder = orderby
+          ?.filter(order => !groupedProperties.some(grouped => grouped.key === order.key))
+          .filter(order => ['asc', 'desc'].includes(order.direction))
+          .map(order => {
+            if (expand === true || (Array.isArray(expand) && expand.includes(order.key))) {
+              const property = $llesca[entitySet].getProperty(order.key)
+              if (property.expand && property.expandText) {
+                return `${property.expand}/${property.expandText} ${order.direction}`
+              } else {
+                return `${order.key} ${order.direction}`
+              }
+            } else {
+              return `${order.key} ${order.direction}`
+            }
+          })
+
+        if (detailOrder.length > 0) {
+          return `${orderbyGroupedExpression},${detailOrder.join()}`
+        }
+      }
+      return orderbyGroupedExpression
     }
   },
   methods: {
@@ -176,7 +205,7 @@ export default {
 
       const response = await entity.getEntitySet({
         $apply: filter + groupby,
-        $orderby: this.orderbyExpression
+        $orderby: this.orderbyGroupedExpression
       })
 
       if (this.allAggregated) {

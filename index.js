@@ -1,4 +1,7 @@
+import ListViewSimple from './component/list-view-simple/index.js'
+
 export const components = {
+  ListViewSimple
 }
 
 export default function install (app, { prefix = 'llesca' } = {}) {

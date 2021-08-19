@@ -7,7 +7,6 @@ import directiveContent from '../../utils/directive-content.js'
 function getInitialState () {
   return {
     data: [],
-    rows: [],
     selectedIndices: [],
     currentPage: 0,
     entitesLoaded: 0
@@ -288,23 +287,7 @@ export default {
         }
       }
 
-      // Create rows
-      const rows = []
-      for (const entity of response.value) {
-        const row = []
-        for (const { property } of this.detailsListColumns) {
-          if (property.$expand) {
-            row.push(getValueFromPath(property.path, entity))
-          } else if (property.$select) {
-            row.push(entity[property.$select])
-          }
-        }
-
-        rows.push(row)
-      }
-
       this.data = response.value
-      this.rows = rows
       this.entitesLoaded = response['@odata.count']
 
       this.$emit('loadEnd')
@@ -336,6 +319,12 @@ export default {
         const items = selectedIndices.map(index => this.data[index])
         this.$emit('updateSelectedItems', items)
       }
+    },
+    getCellValue (property, rowIndex) {
+      return getValueFromPath(
+        property.$expand ? property.path : property.$select,
+        this.data[rowIndex]
+      )
     }
   },
   async mounted () {
@@ -349,7 +338,7 @@ export default {
     <FuraDetailsList
       auto-layout="auto"
       :columns="detailsListColumns"
-      :data="rows"
+      :data="data"
       :compact="compact"
       :selection="selection"
       :selected-indices="selectedIndices"
@@ -366,7 +355,7 @@ export default {
         >
           <div
             class="llesca-cell"
-            v-content:[slotProps.column.property]="slotProps.content"
+            v-content:[slotProps.column.property]="getCellValue(slotProps.column.property, slotProps.rowIndex)"
           />
         </slot>
       </template>
@@ -385,7 +374,7 @@ export default {
     </FuraDetailsList>
 
     <FuraSpinNav
-      v-if="isPaginated && containerClass && paginationClass && rows.length > 0"
+      v-if="isPaginated && containerClass && paginationClass && data.length > 0"
       class="llesca-navigation"
       :class="paginationClass"
       :current="currentPage + 1"

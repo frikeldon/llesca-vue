@@ -2,6 +2,7 @@
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import { requestGet } from '../../utils/odata.js'
+import directiveContent from '../../utils/directive-content.js'
 
 function getInitialState () {
   return {
@@ -15,18 +16,6 @@ function getInitialState () {
 
 function isPathMultiple (path) {
   return path.split('/').some(step => step[0] === '*')
-}
-
-function formatCellValue (property, value) {
-  if (property.htmlify) {
-    return property.htmlify(value)
-  } else if (property.stringify) {
-    return property.stringify(value)
-  } else if (Array.isArray(value)) {
-    return value.join(', ')
-  } else {
-    return value
-  }
 }
 
 function getValueFromPath (path, entity) {
@@ -121,6 +110,9 @@ export default {
   components: {
     FuraSpinNav,
     FuraDetailsList
+  },
+  directives: {
+    content: directiveContent
   },
   props: {
     /** Direccion URL del EntitySet a consultar. */
@@ -302,9 +294,9 @@ export default {
         const row = []
         for (const { property } of this.detailsListColumns) {
           if (property.$expand) {
-            row.push(formatCellValue(property, getValueFromPath(property.path, entity)))
+            row.push(getValueFromPath(property.path, entity))
           } else if (property.$select) {
-            row.push(formatCellValue(property, entity[property.$select]))
+            row.push(entity[property.$select])
           }
         }
 
@@ -373,14 +365,8 @@ export default {
           :column="slotProps.column"
         >
           <div
-            v-if="slotProps.column.property.htmlify"
             class="llesca-cell"
-            v-html="slotProps.content"
-          />
-          <div
-            v-else
-            class="llesca-cell"
-            v-text="slotProps.content"
+            v-content:[slotProps.column.property]="slotProps.content"
           />
         </slot>
       </template>

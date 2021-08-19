@@ -3,7 +3,7 @@ import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestGet } from '../../utils/odata.js'
-import { getValueFromPath, parsePropertiesFromPath } from '../../utils/properties.js'
+import { getValueFromPath, parseDataProperties } from '../../utils/properties.js'
 
 function getInitialState () {
   return {
@@ -190,24 +190,7 @@ export default {
         $count: true
       })
 
-      // Parse data
-      for (const property of this.properties) {
-        if (property.parse) {
-          if (property.$select) {
-            for (const entity of response.value) {
-              const value = entity[property.$select]
-              entity[property.$select] = property.parse(value, property)
-            }
-          }
-          if (property.$expand) {
-            for (const entity of response.value) {
-              parsePropertiesFromPath(property, entity)
-            }
-          }
-        }
-      }
-
-      this.data = response.value
+      this.data = parseDataProperties(this.properties, response.value)
       this.entitesLoaded = response['@odata.count']
 
       this.$emit('loadEnd')

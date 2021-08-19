@@ -78,3 +78,22 @@ export function parsePropertiesFromPath (property, entity) {
     level[last] = property.parse(level[last], property)
   }
 }
+
+export function parseDataProperties (properties, data) {
+  for (const property of properties) {
+    if (property.parse) {
+      if (property.$select) {
+        for (const entity of data) {
+          const value = entity[property.$select]
+          entity[property.$select] = property.parse(value, property)
+        }
+      }
+      if (property.$expand) {
+        for (const entity of data) {
+          parsePropertiesFromPath(property, entity)
+        }
+      }
+    }
+  }
+  return data
+}

@@ -97,3 +97,26 @@ export function parseDataProperties (properties, data) {
   }
   return data
 }
+
+export function createRows (columns, data, { aggregate } = {}) {
+  const rows = []
+  for (const entity of data) {
+    const row = []
+    for (const column of columns) {
+      if (aggregate && column.property.aggregate) {
+        row.push(entity[aggregatedName(column.propertyIndex)])
+      } else if (column.property.$expand) {
+        row.push(getValueFromPath(column.property.path, entity))
+      } else if (column.property.$select) {
+        row.push(entity[column.property.$select])
+      }
+    }
+
+    rows.push(row)
+  }
+  return rows
+}
+
+export function aggregatedName (index) {
+  return `aggregatedProperty${index}`
+}

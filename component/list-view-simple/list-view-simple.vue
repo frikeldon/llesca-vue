@@ -5,15 +5,6 @@ import directiveContent from '../../utils/directive-content.js'
 import { requestGet } from '../../utils/odata.js'
 import { getValueFromPath, parseDataProperties } from '../../utils/properties.js'
 
-function getInitialState () {
-  return {
-    data: [],
-    selectedIndices: [],
-    currentPage: 0,
-    entitesLoaded: 0
-  }
-}
-
 function getOrderIcon (order) {
   if (order?.direction === 'asc') {
     return 'SortDown'
@@ -66,7 +57,14 @@ export default {
         ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
     }
   },
-  data: getInitialState,
+  data () {
+    return {
+      data: [],
+      selectedIndices: [],
+      currentPage: 0,
+      entitesLoaded: 0
+    }
+  },
   emits: [
     /** Inicio de la carga de datos. */
     'loadStart',
@@ -149,7 +147,7 @@ export default {
      * @public
      */
     resetState () {
-      const data = getInitialState()
+      const data = this.$.type.data()
       for (const key in data) {
         this[key] = data[key]
       }

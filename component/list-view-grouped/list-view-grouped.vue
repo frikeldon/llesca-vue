@@ -5,15 +5,6 @@ import { requestGet } from '../../utils/odata.js'
 import { parseDataProperties, createRows, aggregatedName } from '../../utils/properties.js'
 import { findLastIndex, zipMap } from '../../utils/collections.js'
 
-function getInitialState () {
-  return {
-    data: [],
-    rows: [],
-    groups: [],
-    selectedIndices: []
-  }
-}
-
 function getOrderIcon (order) {
   if (order?.direction === 'asc') {
     return 'SortDown'
@@ -70,7 +61,14 @@ export default {
      */
     selection: { type: String, default: '' }
   },
-  data: getInitialState,
+  data () {
+    return {
+      data: [],
+      rows: [],
+      groups: [],
+      selectedIndices: []
+    }
+  },
   emits: [
     /** Inicio de la carga de datos. */
     'loadStart',
@@ -136,7 +134,7 @@ export default {
      * @public
      */
     resetState () {
-      const data = getInitialState()
+      const data = this.$.type.data()
       for (const key in data) {
         this[key] = data[key]
       }

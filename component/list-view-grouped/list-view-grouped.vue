@@ -2,6 +2,7 @@
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestGet } from '../../utils/odata.js'
+import { requestDetail } from '../../utils/list-view.js'
 import { parseDataProperties, createRows, aggregatedName } from '../../utils/properties.js'
 import { findLastIndex, zipMap } from '../../utils/collections.js'
 
@@ -166,41 +167,18 @@ export default {
       this.$emit('loadEnd')
     },
     async loadDetailData () {
-      const allProperties = [
-        ...this.groupedProperties,
-        ...this.properties
-      ]
+      const response = await requestDetail({
+        endPoint: this.endPoint,
 
-      const $select = allProperties
-        .filter(property => property.$select)
-        .map(property => property.$select)
-        .join() || undefined
+        properties: this.groupedProperties
+          .concat(this.properties),
 
-      const $expand = allProperties
-        .filter(property => property.$expand)
-        .map(property => property.$expand)
-        .join() || undefined
+        orderby: this.groupedProperties
+          .map(property => ({ sentence: property.path || property.$select }))
+          .concat(this.orderby),
 
-      const $orderby = [
-        this.getGroupOrderbyExpression(),
-        this.orderby
-          ?.filter(order => ['asc', 'desc'].includes(order.direction))
-          .map(order => `${order.sentence} ${order.direction}`)
-          .join()
-      ]
-        .filter(part => part)
-        .join() || undefined
-
-      const $filter = this.filter
-
-      const response = await requestGet(this.endPoint, {
-        $select,
-        $expand,
-        $filter,
-        $orderby
+        filter: this.filter
       })
-
-      parseDataProperties(allProperties, response.value)
 
       this.data = response.value
       this.rows = createRows(this.columns, response.value)

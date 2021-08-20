@@ -2,8 +2,8 @@
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../utils/directive-content.js'
-import { requestGet } from '../../utils/odata.js'
-import { getValueFromPath, parseDataProperties } from '../../utils/properties.js'
+import { requestDetail } from '../../utils/list-view.js'
+import { getValueFromPath } from '../../utils/properties.js'
 
 function getOrderIcon (order) {
   if (order?.direction === 'asc') {
@@ -159,36 +159,16 @@ export default {
     async loadData () {
       this.$emit('loadStart')
 
-      const $select = this.properties
-        .filter(property => property.$select)
-        .map(property => property.$select)
-        .join() || undefined
-
-      const $expand = this.properties
-        .filter(property => property.$expand)
-        .map(property => property.$expand)
-        .join() || undefined
-
-      const $orderby = this.orderby
-        ?.filter(order => ['asc', 'desc'].includes(order.direction))
-        .map(order => `${order.sentence} ${order.direction}`)
-        .join() || undefined
-
-      const $top = this.isPaginated ? this.pageSize : undefined
-      const $skip = this.isPaginated ? this.currentPage * this.pageSize : undefined
-      const $filter = this.filter
-
-      const response = await requestGet(this.endPoint, {
-        $select,
-        $expand,
-        $filter,
-        $orderby,
-        $top,
-        $skip,
-        $count: true
+      const response = await requestDetail({
+        endPoint: this.endPoint,
+        properties: this.properties,
+        orderby: this.orderby,
+        filter: this.filter,
+        pageSize: this.pageSize,
+        currentPage: this.currentPage
       })
 
-      this.data = parseDataProperties(this.properties, response.value)
+      this.data = response.value
       this.entitesLoaded = response['@odata.count']
 
       this.$emit('loadEnd')

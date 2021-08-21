@@ -94,7 +94,7 @@ export default {
       const { pageSize, entitesLoaded } = this
       return Math.ceil(entitesLoaded / pageSize)
     },
-    detailsListColumns () {
+    columns () {
       const { properties } = this
       return properties
         .filter(property => typeof property.label === 'string')
@@ -218,7 +218,7 @@ export default {
   <div :class="containerClass">
     <FuraDetailsList
       auto-layout="auto"
-      :columns="detailsListColumns"
+      :columns="columns"
       :data="data"
       :compact="compact"
       :selection="selection"

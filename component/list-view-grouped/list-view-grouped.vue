@@ -1,9 +1,8 @@
 <script>
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import directiveContent from '../../utils/directive-content.js'
-import { requestGet } from '../../utils/odata.js'
-import { requestDetail } from '../../utils/list-view.js'
-import { parseDataProperties, createRows, aggregatedName } from '../../utils/properties.js'
+import { requestDetail, loadAggregatedData } from '../../utils/list-view.js'
+import { createRows } from '../../utils/properties.js'
 import { findLastIndex, zipMap } from '../../utils/collections.js'
 
 function getOrderIcon (order) {
@@ -185,70 +184,17 @@ export default {
     },
     async loadAggregatedData (level) {
       const groupedProperties = this.groupedProperties.slice(0, level)
-      const groupby = groupedProperties
-        .map(property => property.path || property.$select)
-        .join()
 
-      const aggregate = this.properties
-        .map((property, index) => {
-          switch (typeof property.aggregate) {
-            case 'string':
-              return `${property.aggregate} as ${aggregatedName(index)}`
-            case 'object':
-              return `${property.aggregate.expression} as ${aggregatedName(index)}`
-            default:
-              return undefined
-          }
-        })
-        .filter(item => item)
-        .join()
-
-      const apply = groupby
-        ? aggregate
-          ? `groupby((${groupby}), aggregate(${aggregate}))`
-          : `groupby((${groupby}))`
-        : aggregate
-          ? `aggregate(${aggregate})`
-          : ''
-
-      const $apply = this.filter
-        ? apply
-          ? `filter(${this.filter})/${apply}`
-          : `filter(${this.filter})`
-        : apply || undefined
-
-      const $orderby = this.getGroupOrderbyExpression(level) || undefined
-
-      const response = await requestGet(this.endPoint, {
-        $apply,
-        $orderby
+      return await loadAggregatedData({
+        endPoint: this.endPoint,
+        groupedProperties,
+        properties: this.properties,
+        orderby: groupedProperties.map(property => ({
+          sentence: property.path || property.$select,
+          direction: getOrderDirection(property)
+        })),
+        filter: this.filter
       })
-
-      parseDataProperties(groupedProperties, response.value)
-
-      // parse aggregated properties
-      for (let index = 0; index < this.properties.length; index += 1) {
-        const property = this.properties[index]
-        if (typeof property.aggregate === 'string') {
-          if (property.parse) {
-            const name = aggregatedName(index)
-            for (const entity of response.value) {
-              const value = entity[name]
-              entity[name] = property.parse(value, property)
-            }
-          }
-        } else if (typeof property.aggregate === 'object') {
-          if (property.aggregate.parse) {
-            const name = aggregatedName(index)
-            for (const entity of response.value) {
-              const value = entity[name]
-              entity[name] = property.aggregate.parse(value, property)
-            }
-          }
-        }
-      }
-
-      return response
     },
     async loadGroupedData () {
       this.groups = []
@@ -296,18 +242,6 @@ export default {
           }
         }
       }
-    },
-    getGroupOrderbyExpression (maxLevel) {
-      const parts = []
-      const length = typeof maxLevel === 'number'
-        ? Math.min(maxLevel, this.groupedProperties.length)
-        : this.groupedProperties.length
-      for (let index = 0; index < length; index += 1) {
-        const property = this.groupedProperties[index]
-        const direction = getOrderDirection(property)
-        parts.push(`${property.path || property.$select} ${direction}`)
-      }
-      return parts.join()
     },
     updateSelectedIndices (selectedIndices) {
       if (!(

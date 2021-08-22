@@ -3,16 +3,7 @@ import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestDetail, loadAggregatedData } from '../../utils/list-view.js'
 import { createRows, getOrderIcon } from '../../utils/properties.js'
-import { findLastIndex, zipMap } from '../../utils/collections.js'
-
-function compareRowPrefix (row, group, numCols) {
-  for (let index = 0; index < numCols; index += 1) {
-    if (row[index] !== group.row[index]) {
-      return false
-    }
-  }
-  return true
-}
+import { findLastIndex, zipMap, subarrayEquals } from '../../utils/collections.js'
 
 export default {
   name: 'LlescaListViewGrouped',
@@ -140,8 +131,8 @@ export default {
 
       for (const group of this.groups) {
         if (group.level === lastLevel) {
-          const firstIndex = this.rows.findIndex(row => compareRowPrefix(row, group, groupedCols))
-          const lastIndex = findLastIndex(this.rows, row => compareRowPrefix(row, group, groupedCols))
+          const firstIndex = this.rows.findIndex(row => subarrayEquals(row, group.row, 0, groupedCols))
+          const lastIndex = findLastIndex(this.rows, row => subarrayEquals(row, group.row, 0, groupedCols))
           group.startIndex = firstIndex
           group.count = lastIndex + 1 - firstIndex
         }
@@ -221,7 +212,7 @@ export default {
 
           while (newGroups.length > 0) {
             const group = newGroups.shift()
-            const previousIndex = findLastIndex(this.groups, currentGroup => compareRowPrefix(group.row, currentGroup, index))
+            const previousIndex = findLastIndex(this.groups, currentGroup => subarrayEquals(group.row, currentGroup.row, 0, index))
             this.groups.splice(previousIndex + 1, 0, group)
           }
         }

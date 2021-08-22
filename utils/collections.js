@@ -15,3 +15,13 @@ export function zipMap (array1, array2, predicate) {
   }
   return output
 }
+
+export function subarrayEquals (array1, array2, startIndex, count) {
+  const length = startIndex + count
+  for (let index = startIndex; index < length; index += 1) {
+    if (array1[index] !== array2[index]) {
+      return false
+    }
+  }
+  return true
+}

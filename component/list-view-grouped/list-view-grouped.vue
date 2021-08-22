@@ -101,7 +101,7 @@ export default {
                   title: property.label,
                   align: property.align,
                   icon: getOrderIcon({ direction: getOrderDirection(property) }),
-                  grouped: true,
+                  type: 'groupedProperties',
                   property,
                   propertyIndex
                 }
@@ -118,7 +118,7 @@ export default {
                   title: property.label,
                   align: property.align,
                   icon: getOrderIcon(order),
-                  grouped: false,
+                  type: 'properties',
                   property,
                   propertyIndex
                 }

@@ -3,7 +3,7 @@ import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestDetail } from '../../utils/list-view.js'
-import { getValueFromPath, getOrderIcon } from '../../utils/properties.js'
+import { createRows, getOrderIcon } from '../../utils/properties.js'
 
 export default {
   name: 'LlescaListViewSimple',
@@ -50,6 +50,7 @@ export default {
   data () {
     return {
       data: [],
+      rows: [],
       selectedIndices: [],
       currentPage: 0,
       entitesLoaded: 0
@@ -159,6 +160,7 @@ export default {
       })
 
       this.data = response.value
+      this.rows = createRows(this.columns, response.value)
       this.entitesLoaded = response['@odata.count']
 
       this.$emit('loadEnd')
@@ -190,12 +192,6 @@ export default {
         const items = selectedIndices.map(index => this.data[index])
         this.$emit('updateSelectedItems', items)
       }
-    },
-    getCellValue (property, rowIndex) {
-      return getValueFromPath(
-        property.$expand ? property.path : property.$select,
-        this.data[rowIndex]
-      )
     }
   },
   mounted () {
@@ -209,7 +205,7 @@ export default {
     <FuraDetailsList
       auto-layout="auto"
       :columns="columns"
-      :data="data"
+      :data="rows"
       :compact="compact"
       :selection="selection"
       :selected-indices="selectedIndices"
@@ -226,7 +222,7 @@ export default {
         >
           <div
             class="llesca-cell"
-            v-content:[slotProps.column.property]="getCellValue(slotProps.column.property, slotProps.rowIndex)"
+            v-content:[slotProps.column.property]="slotProps.content"
           />
         </slot>
       </template>

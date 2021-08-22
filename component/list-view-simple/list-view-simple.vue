@@ -1,7 +1,7 @@
 <script>
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
-import directiveContent from '../../utils/directive-content.js'
+import directiveContent from '../../directive/content.js'
 import {
   requestDetail,
   createRows,

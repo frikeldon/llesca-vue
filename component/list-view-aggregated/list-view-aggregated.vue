@@ -1,6 +1,6 @@
 <script>
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
-import directiveContent from '../../utils/directive-content.js'
+import directiveContent from '../../directive/content.js'
 import {
   findLastIndex,
   zipMap,

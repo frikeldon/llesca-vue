@@ -224,12 +224,12 @@ export function createRows (columns, data, { aggregate } = {}) {
   return rows
 }
 
-export function getOrderIcon (order, defaultValue = null) {
-  if (order?.direction === 'asc') {
+export function getOrderIcon (order, defaultOrder = null) {
+  if ((order?.direction ?? defaultOrder) === 'asc') {
     return 'SortDown'
   }
-  if (order?.direction === 'desc') {
+  if ((order?.direction ?? defaultOrder) === 'desc') {
     return 'SortUp'
   }
-  return defaultValue
+  return null
 }

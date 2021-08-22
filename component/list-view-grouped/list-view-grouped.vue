@@ -1,9 +1,17 @@
 <script>
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import directiveContent from '../../utils/directive-content.js'
-import { requestDetail, loadAggregatedData } from '../../utils/list-view.js'
-import { createRows, getOrderIcon } from '../../utils/properties.js'
-import { findLastIndex, zipMap, subarrayEquals } from '../../utils/collections.js'
+import {
+  findLastIndex,
+  zipMap,
+  subarrayEquals
+} from '../../utils/collections.js'
+import {
+  requestDetail,
+  loadAggregatedData,
+  createRows,
+  getOrderIcon
+} from '../../utils/list-view.js'
 
 export default {
   name: 'LlescaListViewGrouped',

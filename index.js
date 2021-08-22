@@ -1,7 +1,9 @@
+import ListViewAggregated from './component/list-view-aggregated/index.js'
 import ListViewGrouped from './component/list-view-grouped/index.js'
 import ListViewSimple from './component/list-view-simple/index.js'
 
 export const components = {
+  ListViewAggregated,
   ListViewGrouped,
   ListViewSimple
 }

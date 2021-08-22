@@ -1,0 +1,29 @@
+@import "fura-vue/theme/color.less";
+
+.llesca-cell {
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 0px 8px 0px 12px;
+  margin: 0;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  outline: 0;
+
+  .fura-left & {
+    justify-content: flex-start;
+  }
+
+  .fura-center & {
+    justify-content: center;
+  }
+
+  .fura-right & {
+    justify-content: flex-end;
+  }
+}
+
+.llesca-totals::v-deep(thead[data-type="body-header"][data-level="0"] tr) {
+  background-color: @neutralLighter;
+  border-bottom: 1px solid @themePrimary;
+}

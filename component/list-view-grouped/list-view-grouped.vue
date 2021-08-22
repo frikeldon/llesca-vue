@@ -182,10 +182,10 @@ export default {
       this.data = response.value
       this.rows = createRows(this.columns, response.value)
     },
-    async loadAggregatedData (level) {
+    loadAggregatedData (level) {
       const groupedProperties = this.groupedProperties.slice(0, level)
 
-      return await loadAggregatedData({
+      return loadAggregatedData({
         endPoint: this.endPoint,
         groupedProperties,
         properties: this.properties,
@@ -257,7 +257,7 @@ export default {
       return typeof property?.aggregate === 'object' ? property.aggregate : property
     }
   },
-  async mounted () {
+  mounted () {
     this.loadData()
   }
 }

@@ -3,17 +3,7 @@ import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestDetail } from '../../utils/list-view.js'
-import { getValueFromPath } from '../../utils/properties.js'
-
-function getOrderIcon (order) {
-  if (order?.direction === 'asc') {
-    return 'SortDown'
-  }
-  if (order?.direction === 'desc') {
-    return 'SortUp'
-  }
-  return null
-}
+import { getValueFromPath, getOrderIcon } from '../../utils/properties.js'
 
 export default {
   name: 'LlescaListViewSimple',

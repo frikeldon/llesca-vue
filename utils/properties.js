@@ -120,3 +120,13 @@ export function createRows (columns, data, { aggregate } = {}) {
 export function aggregatedName (index) {
   return `aggregatedProperty${index}`
 }
+
+export function getOrderIcon (order, defaultValue = null) {
+  if (order?.direction === 'asc') {
+    return 'SortDown'
+  }
+  if (order?.direction === 'desc') {
+    return 'SortUp'
+  }
+  return defaultValue
+}

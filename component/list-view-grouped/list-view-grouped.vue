@@ -2,24 +2,8 @@
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import directiveContent from '../../utils/directive-content.js'
 import { requestDetail, loadAggregatedData } from '../../utils/list-view.js'
-import { createRows } from '../../utils/properties.js'
+import { createRows, getOrderIcon } from '../../utils/properties.js'
 import { findLastIndex, zipMap } from '../../utils/collections.js'
-
-function getOrderIcon (order) {
-  if (order?.direction === 'asc') {
-    return 'SortDown'
-  }
-  if (order?.direction === 'desc') {
-    return 'SortUp'
-  }
-  return null
-}
-
-function getOrderDirection (property) {
-  return property.direction === 'desc'
-    ? 'desc'
-    : 'asc'
-}
 
 function compareRowPrefix (row, group, numCols) {
   for (let index = 0; index < numCols; index += 1) {
@@ -100,7 +84,7 @@ export default {
               ? {
                   title: property.label,
                   align: property.align,
-                  icon: getOrderIcon({ direction: getOrderDirection(property) }),
+                  icon: getOrderIcon(property, 'asc'),
                   type: 'groupedProperties',
                   property,
                   propertyIndex
@@ -191,7 +175,7 @@ export default {
         properties: this.properties,
         orderby: groupedProperties.map(property => ({
           sentence: property.path || property.$select,
-          direction: getOrderDirection(property)
+          direction: property.direction === 'desc' ? 'desc' : 'asc'
         })),
         filter: this.filter
       })

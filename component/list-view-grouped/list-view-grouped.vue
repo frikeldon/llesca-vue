@@ -103,9 +103,6 @@ export default {
     'clickCell'
   ],
   computed: {
-    isPaginated () {
-      return typeof this.pageSize === 'number'
-    },
     columns () {
       const { groupedProperties, properties, orderby } = this
       return [
@@ -303,9 +300,6 @@ export default {
         const items = selectedIndices.map(index => this.data[index])
         this.$emit('updateSelectedItems', items)
       }
-    },
-    getAggregateTransformations (property) {
-      return typeof property?.aggregate === 'object' ? property.aggregate : property
     }
   },
   mounted () {

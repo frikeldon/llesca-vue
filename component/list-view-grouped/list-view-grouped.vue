@@ -110,37 +110,34 @@ export default {
       const { groupedProperties, properties, orderby } = this
       return [
         ...groupedProperties
+          .filter(property => typeof property.label === 'string')
           .map((property, propertyIndex) => {
-            return typeof property.label === 'string'
-              ? {
-                  title: property.label,
-                  align: property.align,
-                  icon: getOrderIcon(property, 'asc'),
-                  type: 'groupedProperties',
-                  property,
-                  propertyIndex
-                }
-              : undefined
+            return {
+              title: property.label,
+              align: property.align,
+              icon: getOrderIcon(property, 'asc'),
+              type: 'groupedProperties',
+              property,
+              propertyIndex
+            }
           }),
         ...properties
+          .filter(property => typeof property.label === 'string')
           .map((property, propertyIndex) => {
             const order = orderby?.find(order =>
               order.sentence === property.$select ||
               order.sentence === property.path
             )
-            return typeof property.label === 'string'
-              ? {
-                  title: property.label,
-                  align: property.align,
-                  icon: getOrderIcon(order),
-                  type: 'properties',
-                  property,
-                  propertyIndex
-                }
-              : undefined
+            return {
+              title: property.label,
+              align: property.align,
+              icon: getOrderIcon(order),
+              type: 'properties',
+              property,
+              propertyIndex
+            }
           })
       ]
-        .filter(property => property)
     }
   },
   methods: {

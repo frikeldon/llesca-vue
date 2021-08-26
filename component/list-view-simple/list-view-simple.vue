@@ -1,5 +1,5 @@
 <script>
-import ListView from '../list-view/index.js'
+import BaseListView from '../base-list-view/index.js'
 import {
   requestDetail,
   createRows,
@@ -9,7 +9,7 @@ import {
 export default {
   name: 'LlescaListViewSimple',
   components: {
-    ListView
+    BaseListView
   },
   props: {
     /** Direccion URL del EntitySet a consultar. */
@@ -154,7 +154,7 @@ export default {
 </script>
 
 <template>
-  <ListView
+  <BaseListView
     auto-layout="auto"
     :columns="columns"
     :data="rows"
@@ -233,5 +233,5 @@ export default {
         :data="slotProps?.data"
       />
     </template>
-  </ListView>
+  </BaseListView>
 </template>

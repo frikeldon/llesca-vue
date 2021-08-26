@@ -1,5 +1,5 @@
 <script>
-import ListView from '../list-view/index.js'
+import BaseListView from '../base-list-view/index.js'
 import directiveContent from '../../directive/content.js'
 import {
   findLastIndex,
@@ -26,7 +26,7 @@ function getGroupedDirection (property) {
 export default {
   name: 'LlescaListViewGrouped',
   components: {
-    ListView
+    BaseListView
   },
   directives: {
     content: directiveContent
@@ -311,7 +311,7 @@ export default {
 </script>
 
 <template>
-  <ListView
+  <BaseListView
     auto-layout="auto"
     without-group-header
     :columns="columns"
@@ -392,5 +392,5 @@ export default {
         :data="slotProps?.data"
       />
     </template>
-  </ListView>
+  </BaseListView>
 </template>

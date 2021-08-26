@@ -1,5 +1,5 @@
 <script>
-import ListView from '../list-view/index.js'
+import BaseListView from '../base-list-view/index.js'
 import {
   findLastIndex,
   zipMap,
@@ -15,7 +15,7 @@ import {
 export default {
   name: 'LlescaListViewAggregated',
   components: {
-    ListView
+    BaseListView
   },
   props: {
     /** Direccion URL del EntitySet a consultar. */
@@ -292,7 +292,7 @@ export default {
 </script>
 
 <template>
-  <ListView
+  <BaseListView
     class="llesca-totals"
     auto-layout="auto"
     without-group-header
@@ -371,5 +371,5 @@ export default {
         :data="slotProps?.data"
       />
     </template>
-  </ListView>
+  </BaseListView>
 </template>

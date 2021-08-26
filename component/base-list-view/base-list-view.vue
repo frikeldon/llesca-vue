@@ -4,7 +4,7 @@ import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../directive/content.js'
 
 export default {
-  name: 'LlescaListView',
+  name: 'LlescaBaseListView',
   components: {
     FuraSpinNav,
     FuraDetailsList
@@ -243,4 +243,4 @@ export default {
   </div>
 </template>
 
-<style lang="less" scoped src="./list-view.less"></style>
+<style lang="less" scoped src="./base-list-view.less"></style>

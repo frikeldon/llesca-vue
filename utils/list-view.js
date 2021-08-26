@@ -31,7 +31,7 @@ export async function requestDetail ({ endPoint, properties, orderby, filter, pa
   return response
 }
 
-export async function loadAggregatedData ({ endPoint, groupedProperties, properties, orderby, filter }) {
+export async function loadAggregatedData ({ endPoint, groupedProperties, properties, orderby, filter, pageSize, currentPage }) {
   const groupby = groupedProperties
     .map(property => property.path || property.$select)
     .join()
@@ -69,9 +69,18 @@ export async function loadAggregatedData ({ endPoint, groupedProperties, propert
     .map(order => `${order.sentence} ${order.direction}`)
     .join() || undefined
 
+  const isPaginated = Number.isInteger(pageSize) && pageSize > 0
+
+  const $top = isPaginated ? pageSize : undefined
+  const $skip = (isPaginated && (currentPage * pageSize)) || undefined
+  const $count = isPaginated || undefined
+
   const response = await requestGet(endPoint, {
     $apply,
-    $orderby
+    $orderby,
+    $top,
+    $skip,
+    $count
   })
 
   parseDataProperties(groupedProperties, response.value)

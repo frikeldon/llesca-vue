@@ -114,6 +114,7 @@ export default {
               align: property.align,
               icon: getOrderIcon(property, 'asc'),
               type: 'groupedProperties',
+              grouped: true,
               property,
               propertyIndex
             }
@@ -130,6 +131,7 @@ export default {
               align: property.align,
               icon: getOrderIcon(order),
               type: 'properties',
+              grouped: false,
               property,
               propertyIndex
             }

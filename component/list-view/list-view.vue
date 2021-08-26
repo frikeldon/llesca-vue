@@ -178,7 +178,7 @@ export default {
         >
           <div
             class="llesca-cell"
-            :class="{'llesca-grouped': slotProps.column.type === 'groupedProperties'}"
+            :class="{'llesca-grouped': slotProps.column.grouped }"
             v-content:[slotProps.column.property]="slotProps.content"
           />
         </slot>

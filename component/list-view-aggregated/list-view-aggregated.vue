@@ -82,31 +82,27 @@ export default {
       return [
         ...wrapperProperties
           .map((property, propertyIndex) => {
-            return typeof property.label === 'string'
-              ? {
-                  title: property.label,
-                  align: property.align,
-                  icon: getOrderIcon(property, 'asc'),
-                  type: 'wrapperProperties',
-                  grouped: true,
-                  property,
-                  propertyIndex
-                }
-              : undefined
+            return {
+              title: property.label,
+              align: property.align,
+              icon: getOrderIcon(property, 'asc'),
+              type: 'wrapperProperties',
+              grouped: true,
+              property,
+              propertyIndex
+            }
           }),
         ...groupedProperties
           .map((property, propertyIndex) => {
-            return typeof property.label === 'string'
-              ? {
-                  title: property.label,
-                  align: property.align,
-                  icon: getOrderIcon(property),
-                  type: 'groupedProperties',
-                  grouped: false,
-                  property,
-                  propertyIndex
-                }
-              : undefined
+            return {
+              title: property.label,
+              align: property.align,
+              icon: getOrderIcon(property),
+              type: 'groupedProperties',
+              grouped: false,
+              property,
+              propertyIndex
+            }
           }),
         ...properties
           .map((property, propertyIndex) => {

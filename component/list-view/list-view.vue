@@ -106,7 +106,6 @@ export default {
       const { groupedProperties, properties, orderby } = this
       return [
         ...groupedProperties
-          .filter(property => typeof property.label === 'string')
           .map((property, propertyIndex) => {
             return {
               title: property.label,
@@ -125,17 +124,20 @@ export default {
               order.sentence === property.$select ||
               order.sentence === property.path
             )
-            return {
-              title: property.label,
-              align: property.align,
-              icon: getOrderIcon(order),
-              type: 'properties',
-              grouped: false,
-              property,
-              propertyIndex
-            }
+            return typeof property.label === 'string'
+              ? {
+                  title: property.label,
+                  align: property.align,
+                  icon: getOrderIcon(order),
+                  type: 'properties',
+                  grouped: false,
+                  property,
+                  propertyIndex
+                }
+              : undefined
           })
       ]
+        .filter(property => property)
     }
   },
   methods: {

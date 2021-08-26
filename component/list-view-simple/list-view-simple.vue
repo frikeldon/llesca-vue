@@ -1,7 +1,5 @@
 <script>
-import FuraDetailsList from 'fura-vue/component/details-list/index.js'
-import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
-import directiveContent from '../../directive/content.js'
+import ListView from '../list-view/index.js'
 import {
   requestDetail,
   createRows,
@@ -11,29 +9,17 @@ import {
 export default {
   name: 'LlescaListViewSimple',
   components: {
-    FuraSpinNav,
-    FuraDetailsList
-  },
-  directives: {
-    content: directiveContent
+    ListView
   },
   props: {
     /** Direccion URL del EntitySet a consultar. */
     endPoint: { type: [Array, String], required: true },
     /** Llista de propiedades a consultar. */
     properties: { type: Array, required: true },
-    /** Número de elementos por página. */
-    pageSize: {
-      type: Number,
-      default: null,
-      validator: pageSize => Number.isInteger(pageSize)
-    },
     /** Filtro OData a aplicar */
     filter: { type: [String, Object], default: null },
     /** Filtro OData a aplicar */
     orderby: { type: Array, default: null },
-    /** Indica si la tabla debe dibujarse en modo compacto. */
-    compact: { type: Boolean, default: false },
     /**
      * Controla el tipo de selección de filas. Si no está definido, no hay control de selcción.
      * @values multiple, simple, safe
@@ -43,12 +29,20 @@ export default {
      * Indica la posición en la que mostrar los componentes de navegación, o si deben esconderse.
      * @values topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight, none
      */
+    /** Número de elementos por página. */
+    pageSize: {
+      type: Number,
+      default: null,
+      validator: pageSize => Number.isInteger(pageSize)
+    },
     paginationPosition: {
       type: String,
       default: 'bottomCenter',
       validator: paginationPosition =>
         ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
-    }
+    },
+    /** Indica si la tabla debe dibujarse en modo compacto. */
+    compact: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -81,13 +75,6 @@ export default {
     'clickCell'
   ],
   computed: {
-    isPaginated () {
-      return typeof this.pageSize === 'number' && this.pageSize > 0
-    },
-    totalPages () {
-      const { pageSize, entitesLoaded } = this
-      return Math.ceil(entitesLoaded / pageSize)
-    },
     columns () {
       const { properties } = this
       return properties
@@ -104,35 +91,6 @@ export default {
             property
           }
         })
-    },
-    containerClass () {
-      switch (this.paginationPosition) {
-        case 'topLeft':
-        case 'topCenter':
-        case 'topRight':
-          return 'llesca-navTop'
-        case 'bottomLeft':
-        case 'bottomCenter':
-        case 'bottomRight':
-          return 'llesca-navBottom'
-        default:
-          return undefined
-      }
-    },
-    paginationClass () {
-      switch (this.paginationPosition) {
-        case 'topLeft':
-        case 'bottomLeft':
-          return 'llesca-left'
-        case 'topCenter':
-        case 'bottomCenter':
-          return 'llesca-center'
-        case 'topRight':
-        case 'bottomRight':
-          return 'llesca-right'
-        default:
-          return undefined
-      }
     }
   },
   methods: {
@@ -174,17 +132,9 @@ export default {
      * @public
      */
     goToPage (index) {
-      if (this.isPaginated && index >= 0 && index < this.totalPages) {
-        this.currentPage = index
-        this.updateSelectedIndices([])
-        this.loadData()
-      }
-    },
-    handleGoTo (page) {
-      const value = Number(page)
-      if (!isNaN(value) && value > 0 && value <= this.totalPages) {
-        this.goToPage(value - 1)
-      }
+      this.currentPage = index
+      this.updateSelectedIndices([])
+      this.loadData()
     },
     updateSelectedIndices (selectedIndices) {
       if (!(
@@ -204,65 +154,84 @@ export default {
 </script>
 
 <template>
-  <div :class="containerClass">
-    <FuraDetailsList
-      auto-layout="auto"
-      :columns="columns"
-      :data="rows"
-      :compact="compact"
-      :selection="selection"
-      :selected-indices="selectedIndices"
-      @update:selected-indices="updateSelectedIndices"
-      @clickHeader="$emit('clickHeader', $event)"
-      @clickCell="$emit('clickCell', $event)"
-    >
-      <template #default="slotProps">
-        <slot
-          :row-index="slotProps.rowIndex"
-          :column-index="slotProps.columnIndex"
-          :content="slotProps.content"
-          :column="slotProps.column"
-        >
-          <div
-            class="llesca-cell"
-            v-content:[slotProps.column.property]="slotProps.content"
-          />
-        </slot>
-      </template>
-      <template #header="slotProps">
-        <!--
-        @slot Contenido de una cabecera
+  <ListView
+    auto-layout="auto"
+    :columns="columns"
+    :data="rows"
+    :selection="selection"
+    :selected-indices="selectedIndices"
+    :current-page="currentPage"
+    :data-count="entitesLoaded"
+    :page-size="pageSize"
+    :pagination-position="paginationPosition"
+    :compact="compact"
+    @clickHeader="$emit('clickHeader', $event)"
+    @clickCell="$emit('clickCell', $event)"
+    @update:selected-indices="updateSelectedIndices"
+    @update:currentPage="goToPage"
+  >
+    <template #default="slotProps">
+      <!--
+        @slot Contenido de una celda.
+        @binding {number} rowIndex Índice de la fila.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {string} content Contenido de la celda.
+        @binding {object} column Referencia a la definición de la columna.
+      -->
+      <slot
+        :row-index="slotProps.rowIndex"
+        :column-index="slotProps.columnIndex"
+        :content="slotProps.content"
+        :column="slotProps.column"
+      />
+    </template>
+    <template #header="slotProps">
+      <!--
+        @slot Contenido de una cabecera.
         @binding {object} column Referencia a la definición de la columna.
         @binding {number} index Índice de la definición de la columna.
       -->
-        <slot
-          name="header"
-          :column="slotProps.column"
-          :index="slotProps.index"
-        />
-      </template>
-    </FuraDetailsList>
-
-    <FuraSpinNav
-      v-if="isPaginated && containerClass && paginationClass && data.length > 0"
-      class="llesca-navigation"
-      :class="paginationClass"
-      :current="currentPage + 1"
-      :total="totalPages"
-      end-button
-      start-button
-      editable
-      :disable-prev="currentPage <= 0"
-      :disable-next="currentPage + 1 >= totalPages"
-      :disable-start="currentPage <= 0"
-      :disable-end="currentPage + 1 >= totalPages"
-      @prev="goToPage(currentPage - 1)"
-      @next="goToPage(currentPage + 1)"
-      @start="goToPage(0)"
-      @end="goToPage(totalPages - 1)"
-      @go-to="handleGoTo"
-    />
-  </div>
+      <slot
+        name="header"
+        :column="slotProps.column"
+        :index="slotProps.index"
+      />
+    </template>
+    <template #bodyHeader="slotProps">
+      <!--
+        @slot Contenido de una celda de un encabezado de cuerpo.
+        @binding {number} groupIndex Índice de la definición del grupo.
+        @binding {object} group Referencia a la definición del grupo.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {object} column Referencia a la definición de la columna.
+        @binding {Array} data Datos del grupo.
+      -->
+      <slot
+        name="bodyHeader"
+        :group-index="slotProps?.groupIndex"
+        :group="slotProps?.group"
+        :column-index="slotProps?.columnIndex"
+        :column="slotProps?.column"
+        :data="slotProps?.data"
+      />
+    </template>
+    <template #bodyFooter="slotProps">
+      <!--
+        @slot Contenido de una celda de un pie de cuerpo.
+        @binding {number} groupIndex Índice de la definición del grupo.
+        @binding {object} group Referencia a la definición del grupo.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {object} column Referencia a la definición de la columna.
+        @binding {Array} data Datos del grupo.
+      -->
+      <slot
+        name="bodyFooter"
+        :group-index="slotProps?.groupIndex"
+        :group="slotProps?.group"
+        :column-index="slotProps?.columnIndex"
+        :column="slotProps?.column"
+        :data="slotProps?.data"
+      />
+    </template>
+  </ListView>
 </template>
-
-<style lang="less" scoped src="./list-view-simple.less"></style>

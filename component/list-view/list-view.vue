@@ -24,7 +24,7 @@ function getGroupedDirection (property) {
 }
 
 export default {
-  name: 'LlescaListViewGrouped',
+  name: 'LlescaListView',
   components: {
     BaseListView
   },
@@ -35,7 +35,7 @@ export default {
     /** Direccion URL del EntitySet a consultar. */
     endPoint: { type: [Array, String], required: true },
     /** Llista de propiedades a agrupar. */
-    groupedProperties: { type: Array, required: true },
+    groupedProperties: { type: Array, default: () => [] },
     /** Llista de propiedades a consultar. */
     properties: { type: Array, required: true },
     /** Indica si todas las agrupaciones se muestran en el primer nivel. */

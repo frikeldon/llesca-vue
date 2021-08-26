@@ -2,6 +2,7 @@
 import FuraDetailsList from 'fura-vue/component/details-list/index.js'
 import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../directive/content.js'
+import { subarrayEquals } from '../../utils/collections.js'
 
 export default {
   name: 'LlescaBaseListView',
@@ -16,7 +17,7 @@ export default {
     /** Definición de las columnas. */
     columns: { type: Array, required: true },
     /** Datos a mostrar en la tabla. */
-    data: { type: Array, required: true },
+    rows: { type: Array, required: true },
     /** Definición de las agrupaciones de datos. */
     groups: { type: Array, default: () => [] },
     /** Lista con los índices seleccionados. */
@@ -125,6 +126,13 @@ export default {
         default:
           return undefined
       }
+    },
+    currentGroups () {
+      const { groups, rows } = this
+      return groups.filter(group =>
+        group.level === 0 ||
+        rows.findIndex(row => subarrayEquals(row, group.row, 0, group.level)) >= 0
+      )
     }
   },
   methods: {
@@ -152,8 +160,8 @@ export default {
       class="llesca-listView"
       without-group-header
       :columns="columns"
-      :data="data"
-      :groups="groups"
+      :data="rows"
+      :groups="currentGroups"
       :selected-indices="selectedIndices"
       :auto-layout="autoLayout"
       :compact="compact"
@@ -222,7 +230,7 @@ export default {
     </FuraDetailsList>
 
     <FuraSpinNav
-      v-if="isPaginated && containerClass && paginationClass && data.length > 0"
+      v-if="isPaginated && containerClass && paginationClass && rows.length > 0"
       class="llesca-navigation"
       :class="paginationClass"
       :current="currentPage + 1"

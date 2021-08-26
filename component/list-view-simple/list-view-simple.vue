@@ -157,7 +157,7 @@ export default {
   <BaseListView
     auto-layout="auto"
     :columns="columns"
-    :data="rows"
+    :rows="rows"
     :selection="selection"
     :selected-indices="selectedIndices"
     :current-page="currentPage"

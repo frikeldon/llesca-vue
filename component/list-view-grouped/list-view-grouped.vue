@@ -75,7 +75,6 @@ export default {
       data: [],
       rows: [],
       groups: [],
-      currentGroups: [],
       selectedIndices: [],
       currentPage: 0,
       entitesLoaded: 0
@@ -162,8 +161,6 @@ export default {
         this.groups.length === 0 ? this.loadGroupedData() : undefined
       ])
 
-      this.loadCurrentGroups()
-
       const lastLevel = this.groups.reduce((maxLevel, group) => Math.max(maxLevel, group.level || 0), 0)
       const groupedCols = this.groupedProperties.length
 
@@ -231,56 +228,37 @@ export default {
         })
       }
 
+      const lastLevel = this.groupedProperties.length
       if (this.flatGroups) {
-        const response = await this.loadAggregatedData(this.groupedProperties.length)
+        const response = await this.loadAggregatedData(lastLevel)
         const rows = createRows(this.columns, response.value, { aggregate: true })
 
         this.groups = this.groups.concat(zipMap(response.value, rows, (entity, row) => ({
           startIndex: 0,
           count: 0,
-          level: 1,
+          level: lastLevel,
           entity,
           row
         })))
       } else {
-        for (let index = 0; index < this.groupedProperties.length; index += 1) {
-          const response = await this.loadAggregatedData(index + 1)
+        for (let level = 1; level <= lastLevel; level += 1) {
+          const response = await this.loadAggregatedData(level)
           const rows = createRows(this.columns, response.value, { aggregate: true })
 
           const newGroups = zipMap(response.value, rows, (entity, row) => ({
             startIndex: 0,
             count: 0,
-            level: index + 1,
+            level,
             entity,
             row
           }))
 
           while (newGroups.length > 0) {
             const group = newGroups.shift()
-            const previousIndex = findLastIndex(this.groups, currentGroup => subarrayEquals(group.row, currentGroup.row, 0, index))
+            const previousIndex = findLastIndex(this.groups, currentGroup => subarrayEquals(group.row, currentGroup.row, 0, level - 1))
             this.groups.splice(previousIndex + 1, 0, group)
           }
         }
-      }
-    },
-    loadCurrentGroups () {
-      if (this.flatGroups) {
-        const groupedCols = this.groupedProperties.length
-        this.currentGroups = this.groups.filter(group => {
-          if (group.level === 0) {
-            return true
-          }
-          const firstIndex = this.rows.findIndex(row => subarrayEquals(row, group.row, 0, groupedCols))
-          return firstIndex >= 0
-        })
-      } else {
-        this.currentGroups = this.groups.filter(group => {
-          if (group.level === 0) {
-            return true
-          }
-          const firstIndex = this.rows.findIndex(row => subarrayEquals(row, group.row, 0, group.level))
-          return firstIndex >= 0
-        })
       }
     },
     /**
@@ -315,8 +293,8 @@ export default {
     auto-layout="auto"
     without-group-header
     :columns="columns"
-    :groups="currentGroups"
-    :data="rows"
+    :groups="groups"
+    :rows="rows"
     :compact="compact"
     :selection="selection"
     :selected-indices="selectedIndices"

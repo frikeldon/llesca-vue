@@ -19,7 +19,13 @@ export function zipMap (array1, array2, predicate) {
 export function subarrayEquals (array1, array2, startIndex, count) {
   const length = startIndex + count
   for (let index = startIndex; index < length; index += 1) {
-    if (array1[index] !== array2[index]) {
+    const item1 = array1[index]
+    const item2 = array2[index]
+    if (item1 instanceof Date && item2 instanceof Date) {
+      if (item1.getTime() !== item2.getTime()) {
+        return false
+      }
+    } else if (item1 !== item2) {
       return false
     }
   }

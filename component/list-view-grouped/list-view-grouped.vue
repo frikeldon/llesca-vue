@@ -1,5 +1,5 @@
 <script>
-import FuraDetailsList from 'fura-vue/component/details-list/index.js'
+import ListView from '../list-view/index.js'
 import directiveContent from '../../directive/content.js'
 import {
   findLastIndex,
@@ -13,10 +13,20 @@ import {
   getOrderIcon
 } from '../../utils/list-view.js'
 
+function getGroupedDirection (property) {
+  switch (property.direction) {
+    case 'desc':
+      return 'desc'
+    case 'asc':
+    default:
+      return 'asc'
+  }
+}
+
 export default {
   name: 'LlescaListViewGrouped',
   components: {
-    FuraDetailsList
+    ListView
   },
   directives: {
     content: directiveContent
@@ -36,20 +46,39 @@ export default {
     filter: { type: [String, Object], default: null },
     /** Filtro OData a aplicar */
     orderby: { type: Array, default: null },
-    /** Indica si la tabla debe dibujarse en modo compacto. */
-    compact: { type: Boolean, default: false },
     /**
      * Controla el tipo de selección de filas. Si no está definido, no hay control de selcción.
      * @values multiple, simple, safe
      */
-    selection: { type: String, default: '' }
+    selection: { type: String, default: '' },
+    /**
+     * Indica la posición en la que mostrar los componentes de navegación, o si deben esconderse.
+     * @values topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight, none
+     */
+    /** Número de elementos por página. */
+    pageSize: {
+      type: Number,
+      default: null,
+      validator: pageSize => Number.isInteger(pageSize)
+    },
+    paginationPosition: {
+      type: String,
+      default: 'bottomCenter',
+      validator: paginationPosition =>
+        ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
+    },
+    /** Indica si la tabla debe dibujarse en modo compacto. */
+    compact: { type: Boolean, default: false }
   },
   data () {
     return {
       data: [],
       rows: [],
       groups: [],
-      selectedIndices: []
+      currentGroups: [],
+      selectedIndices: [],
+      currentPage: 0,
+      entitesLoaded: 0
     }
   },
   emits: [
@@ -74,6 +103,9 @@ export default {
     'clickCell'
   ],
   computed: {
+    isPaginated () {
+      return typeof this.pageSize === 'number'
+    },
     columns () {
       const { groupedProperties, properties, orderby } = this
       return [
@@ -123,7 +155,7 @@ export default {
       }
     },
     /**
-     * Carga los datos.
+     * Carga los datos de la página actual, y si los datos de los grupos no estan cargados, tambien los carga.
      * @public
      */
     async loadData () {
@@ -131,8 +163,10 @@ export default {
 
       await Promise.all([
         this.loadDetailData(),
-        this.loadGroupedData()
+        this.groups.length === 0 ? this.loadGroupedData() : undefined
       ])
+
+      this.loadCurrentGroups()
 
       const lastLevel = this.groups.reduce((maxLevel, group) => Math.max(maxLevel, group.level || 0), 0)
       const groupedCols = this.groupedProperties.length
@@ -156,14 +190,21 @@ export default {
           .concat(this.properties),
 
         orderby: this.groupedProperties
-          .map(property => ({ sentence: property.path || property.$select }))
+          .map(property => ({
+            sentence: property.path || property.$select,
+            direction: getGroupedDirection(property)
+          }))
           .concat(this.orderby),
 
-        filter: this.filter
+        filter: this.filter,
+
+        pageSize: this.pageSize,
+        currentPage: this.currentPage
       })
 
       this.data = response.value
       this.rows = createRows(this.columns, response.value)
+      this.entitesLoaded = response['@odata.count']
     },
     loadAggregatedData (level) {
       const groupedProperties = this.groupedProperties.slice(0, level)
@@ -226,6 +267,36 @@ export default {
         }
       }
     },
+    loadCurrentGroups () {
+      if (this.flatGroups) {
+        const groupedCols = this.groupedProperties.length
+        this.currentGroups = this.groups.filter(group => {
+          if (group.level === 0) {
+            return true
+          }
+          const firstIndex = this.rows.findIndex(row => subarrayEquals(row, group.row, 0, groupedCols))
+          return firstIndex >= 0
+        })
+      } else {
+        this.currentGroups = this.groups.filter(group => {
+          if (group.level === 0) {
+            return true
+          }
+          const firstIndex = this.rows.findIndex(row => subarrayEquals(row, group.row, 0, group.level))
+          return firstIndex >= 0
+        })
+      }
+    },
+    /**
+     * Actualiza la propiedad de pagina actual, y recarga los datos.
+     * @param {number} index Número de pagina empezando por la 0.
+     * @public
+     */
+    goToPage (index) {
+      this.currentPage = index
+      this.updateSelectedIndices([])
+      this.loadData()
+    },
     updateSelectedIndices (selectedIndices) {
       if (!(
         this.selectedIndices.length === selectedIndices.length &&
@@ -247,52 +318,42 @@ export default {
 </script>
 
 <template>
-  <FuraDetailsList
-    class="llesca-totals"
+  <ListView
     auto-layout="auto"
     without-group-header
     :columns="columns"
-    :groups="groups"
+    :groups="currentGroups"
     :data="rows"
     :compact="compact"
     :selection="selection"
     :selected-indices="selectedIndices"
+    :page-size="pageSize"
+    :current-page="currentPage"
+    :data-count="entitesLoaded"
+    :pagination-position="paginationPosition"
     @update:selected-indices="updateSelectedIndices"
     @clickHeader="$emit('clickHeader', $event)"
     @clickCell="$emit('clickCell', $event)"
+    @update:currentPage="goToPage"
   >
     <template #default="slotProps">
+      <!--
+        @slot Contenido de una celda.
+        @binding {number} rowIndex Índice de la fila.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {string} content Contenido de la celda.
+        @binding {object} column Referencia a la definición de la columna.
+      -->
       <slot
         :row-index="slotProps.rowIndex"
         :column-index="slotProps.columnIndex"
         :content="slotProps.content"
         :column="slotProps.column"
-      >
-        <div
-          class="llesca-cell"
-          :class="{'llesca-grouped': slotProps.column.type === 'groupedProperties'}"
-          v-content:[slotProps.column.property]="slotProps.content"
-        />
-      </slot>
-    </template>
-    <template #bodyHeader="slotProps">
-      <slot
-        name="bodyHeader"
-        :group-index="slotProps?.groupIndex"
-        :group="slotProps?.group"
-        :column-index="slotProps?.columnIndex"
-        :column="slotProps?.column"
-        :data="slotProps?.data"
-      >
-        <b
-          class="llesca-cell"
-          v-content:[getAggregateTransformations(slotProps?.column?.property)]="slotProps?.group?.row[slotProps.columnIndex]"
-        />
-      </slot>
+      />
     </template>
     <template #header="slotProps">
       <!--
-        @slot Contenido de una cabecera
+        @slot Contenido de una cabecera.
         @binding {object} column Referencia a la definición de la columna.
         @binding {number} index Índice de la definición de la columna.
       -->
@@ -302,7 +363,41 @@ export default {
         :index="slotProps.index"
       />
     </template>
-  </FuraDetailsList>
+    <template #bodyHeader="slotProps">
+      <!--
+        @slot Contenido de una celda de un encabezado de cuerpo.
+        @binding {number} groupIndex Índice de la definición del grupo.
+        @binding {object} group Referencia a la definición del grupo.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {object} column Referencia a la definición de la columna.
+        @binding {Array} data Datos del grupo.
+      -->
+      <slot
+        name="bodyHeader"
+        :group-index="slotProps?.groupIndex"
+        :group="slotProps?.group"
+        :column-index="slotProps?.columnIndex"
+        :column="slotProps?.column"
+        :data="slotProps?.data"
+      />
+    </template>
+    <template #bodyFooter="slotProps">
+      <!--
+        @slot Contenido de una celda de un pie de cuerpo.
+        @binding {number} groupIndex Índice de la definición del grupo.
+        @binding {object} group Referencia a la definición del grupo.
+        @binding {number} columnIndex Índice de la definición de la columna.
+        @binding {object} column Referencia a la definición de la columna.
+        @binding {Array} data Datos del grupo.
+      -->
+      <slot
+        name="bodyFooter"
+        :group-index="slotProps?.groupIndex"
+        :group="slotProps?.group"
+        :column-index="slotProps?.columnIndex"
+        :column="slotProps?.column"
+        :data="slotProps?.data"
+      />
+    </template>
+  </ListView>
 </template>
-
-<style lang="less" scoped src="./list-view-grouped.less"></style>

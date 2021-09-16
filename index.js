@@ -1,9 +1,27 @@
 import BaseListView from './component/base-list-view/index.js'
+import FieldCheckbox from './component/field-checkbox/index.js'
+import FieldCombo from './component/field-combo/index.js'
+import FieldComboAsync from './component/field-combo-async/index.js'
+import FieldDate from './component/field-date/index.js'
+import FieldDictionary from './component/field-dictionary/index.js'
+import FieldDictionaryAsync from './component/field-dictionary-async/index.js'
+import FieldNumber from './component/field-number/index.js'
+import FieldText from './component/field-text/index.js'
+import Form from './component/form/index.js'
 import ListView from './component/list-view/index.js'
 import ListViewAggregated from './component/list-view-aggregated/index.js'
 
 export const components = {
   BaseListView,
+  FieldCheckbox,
+  FieldCombo,
+  FieldComboAsync,
+  FieldDate,
+  FieldDictionary,
+  FieldDictionaryAsync,
+  FieldNumber,
+  FieldText,
+  Form,
   ListView,
   ListViewAggregated
 }

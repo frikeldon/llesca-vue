@@ -45,7 +45,7 @@ export default {
     /** Filtro OData a aplicar */
     filter: { type: [String, Object], default: null },
     /** Filtro OData a aplicar */
-    orderby: { type: Array, default: null },
+    orderby: { type: Array, default: () => [] },
     /**
      * Controla el tipo de selección de filas. Si no está definido, no hay control de selcción.
      * @values multiple, simple, safe

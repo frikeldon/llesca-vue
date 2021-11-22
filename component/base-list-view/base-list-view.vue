@@ -73,7 +73,7 @@ export default {
      * Cambio en la seleccion de elementos.
      * @property {Array} selectedItems Los elementos seleccionados.
      */
-    'updateSelectedItems',
+    'update:selectedIndices',
     /**
      * Se genera cuando el usuario hace clic sobre una celda de la cabecera.
      * @property {number} index Índice de la columna pulsada.
@@ -166,7 +166,7 @@ export default {
       :auto-layout="autoLayout"
       :compact="compact"
       :selection="selection"
-      @update-selected-items="$emit('updateSelectedItems', $event)"
+      @update:selected-indices="$emit('update:selectedIndices', $event)"
       @click-header="$emit('clickHeader', $event)"
       @click-cell="$emit('clickCell', $event)"
     >

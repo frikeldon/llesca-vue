@@ -1,6 +1,6 @@
 import { requestGet } from './odata.js'
 
-export async function requestDetail ({ endPoint, properties, orderby, filter, pageSize, currentPage }) {
+export async function requestDetail ({ endPoint, properties, orderby, filter, pageSize, currentPage, headers }) {
   const isPaginated = Number.isInteger(pageSize) && pageSize > 0
 
   const response = await requestGet(endPoint, {
@@ -24,14 +24,14 @@ export async function requestDetail ({ endPoint, properties, orderby, filter, pa
     $top: isPaginated ? pageSize : undefined,
     $skip: (isPaginated && (currentPage * pageSize)) || undefined,
     $count: isPaginated || undefined
-  })
+  }, headers)
 
   response.value = parseDataProperties(properties, response.value)
 
   return response
 }
 
-export async function loadAggregatedData ({ endPoint, groupedProperties, properties, orderby, filter, pageSize, currentPage }) {
+export async function loadAggregatedData ({ endPoint, groupedProperties, properties, orderby, filter, pageSize, currentPage, headers }) {
   const groupby = groupedProperties
     .map(property => property.path || property.$select)
     .join()
@@ -81,7 +81,7 @@ export async function loadAggregatedData ({ endPoint, groupedProperties, propert
     $top,
     $skip,
     $count
-  })
+  }, headers)
 
   parseDataProperties(groupedProperties, response.value)
 

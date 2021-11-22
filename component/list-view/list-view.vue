@@ -68,7 +68,9 @@ export default {
         ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
     },
     /** Indica si la tabla debe dibujarse en modo compacto. */
-    compact: { type: Boolean, default: false }
+    compact: { type: Boolean, default: false },
+    /** Cabeceras HTTP a enviar con las peticiones */
+    headers: { type: Array, default: () => [] }
   },
   data () {
     return {
@@ -194,7 +196,9 @@ export default {
         filter: this.filter,
 
         pageSize: this.pageSize,
-        currentPage: this.currentPage
+        currentPage: this.currentPage,
+
+        headers: this.headers
       })
 
       this.data = response.value
@@ -212,7 +216,8 @@ export default {
           sentence: property.path || property.$select,
           direction: property.direction === 'desc' ? 'desc' : 'asc'
         })),
-        filter: this.filter
+        filter: this.filter,
+        headers: this.headers
       })
     },
     async loadGroupedData () {

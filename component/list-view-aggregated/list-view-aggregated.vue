@@ -49,7 +49,9 @@ export default {
         ['topLeft', 'topCenter', 'topRight', 'bottomLeft', 'bottomCenter', 'bottomRight', 'none'].includes(paginationPosition)
     },
     /** Indica si la tabla debe dibujarse en modo compacto. */
-    compact: { type: Boolean, default: false }
+    compact: { type: Boolean, default: false },
+    /** Cabeceras HTTP a enviar con las peticiones */
+    headers: { type: Array, default: () => [] }
   },
   data () {
     return {
@@ -162,7 +164,8 @@ export default {
     async loadDetailData () {
       const response = await this.loadAggregatedData(this.wrapperProperties.length, {
         withGroupedProperties: true,
-        paginated: true
+        paginated: true,
+        headers: this.headers
       })
       this.data = response.value
       this.rows = createRows(this.columns, response.value, { aggregate: true })
@@ -198,7 +201,8 @@ export default {
         ].filter(order => ['asc', 'desc'].includes(order.direction)),
         filter: this.filter,
         pageSize: paginated && this.pageSize,
-        currentPage: this.currentPage
+        currentPage: this.currentPage,
+        headers: this.headers
       })
     },
     async loadGroupedData () {

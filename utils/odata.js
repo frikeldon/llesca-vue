@@ -37,10 +37,11 @@ export function createUrl (urlParts, getParams = {}) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestGet (urlParts, getParams) {
+export async function requestGet (urlParts, getParams, headers = []) {
   const url = createUrl(urlParts, getParams)
   const options = {
-    headers: { Accept: 'application/json' }
+    headers: { Accept: 'application/json' },
+    ...headers
   }
   const response = await fetch(url, options)
   if (response.ok) {
@@ -59,13 +60,14 @@ export async function requestGet (urlParts, getParams) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestPost (urlParts, data, getParams) {
+export async function requestPost (urlParts, data, getParams, headers = []) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
+      ...headers
     },
     body: JSON.stringify(data)
   }
@@ -86,13 +88,14 @@ export async function requestPost (urlParts, data, getParams) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestPut (urlParts, data, getParams) {
+export async function requestPut (urlParts, data, getParams, headers = []) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json'
+      Accept: 'application/json',
+      ...headers
     },
     body: JSON.stringify(data)
   }
@@ -113,11 +116,12 @@ export async function requestPut (urlParts, data, getParams) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestDelete (urlParts, getParams) {
+export async function requestDelete (urlParts, getParams, headers = []) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'DELETE',
-    headers: { Accept: 'application/json' }
+    headers: { Accept: 'application/json' },
+    ...headers
   }
   const response = await fetch(url, options)
   if (response.ok) {

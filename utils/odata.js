@@ -37,11 +37,13 @@ export function createUrl (urlParts, getParams = {}) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestGet (urlParts, getParams, headers = []) {
+export async function requestGet (urlParts, getParams, headers = {}) {
   const url = createUrl(urlParts, getParams)
   const options = {
-    headers: { Accept: 'application/json' },
-    ...headers
+    headers: {
+      Accept: 'application/json',
+      ...headers
+    }
   }
   const response = await fetch(url, options)
   if (response.ok) {
@@ -60,7 +62,7 @@ export async function requestGet (urlParts, getParams, headers = []) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestPost (urlParts, data, getParams, headers = []) {
+export async function requestPost (urlParts, data, getParams, headers = {}) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'POST',
@@ -88,7 +90,7 @@ export async function requestPost (urlParts, data, getParams, headers = []) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestPut (urlParts, data, getParams, headers = []) {
+export async function requestPut (urlParts, data, getParams, headers = {}) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'PUT',
@@ -116,12 +118,14 @@ export async function requestPut (urlParts, data, getParams, headers = []) {
  * @param {object} [getParams] Parametros GET de la URL.
  * @returns Objeto URL.
  */
-export async function requestDelete (urlParts, getParams, headers = []) {
+export async function requestDelete (urlParts, getParams, headers = {}) {
   const url = this.createUrl(urlParts, getParams)
   const options = {
     method: 'DELETE',
-    headers: { Accept: 'application/json' },
-    ...headers
+    headers: {
+      Accept: 'application/json',
+      ...headers
+    }
   }
   const response = await fetch(url, options)
   if (response.ok) {

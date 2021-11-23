@@ -70,7 +70,7 @@ export default {
     /** Indica si la tabla debe dibujarse en modo compacto. */
     compact: { type: Boolean, default: false },
     /** Cabeceras HTTP a enviar con las peticiones */
-    headers: { type: Array, default: () => [] }
+    headers: { type: Object, default: () => {} }
   },
   data () {
     return {

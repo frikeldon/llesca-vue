@@ -70,7 +70,10 @@ export default {
       default: null,
       validator: orderDirection => !orderDirection || ['asc', 'desc'].includes(orderDirection)
     },
-    hasEmptyValue: { type: Boolean, default: false }
+    /** Indica si se ha de mostrar un valor en blanco. */
+    hasEmptyValue: { type: Boolean, default: false },
+    /** Cabeceras HTTP a enviar con las peticiones. */
+    headers: { type: Object, default: () => {} }
   },
   emits: [
     /**
@@ -135,7 +138,7 @@ export default {
             ? `${this.keyText} desc`
             : `${this.keyText} asc`
           : undefined
-      })
+      }, this.headers)
 
       return response.value
         .map(row => ({

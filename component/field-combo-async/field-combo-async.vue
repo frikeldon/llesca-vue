@@ -30,7 +30,7 @@ export default {
     /** Indica si las opciones seleccionadas deben ocultarse de las opciones candidatas. */
     filterOptions: { type: Boolean, default: false },
     /** Valor o lista de valores seleccionados. */
-    modelValue: { type: Array, default: () => [] },
+    modelValue: { type: undefined, default: undefined },
     /** Indica si el campo es de solo lectura. */
     readonly: { type: Boolean, default: false },
     /** Indica si el campo permite seleccionar más de una opción. */
@@ -91,11 +91,24 @@ export default {
   },
   computed: {
     rawValue () {
-      const { dataType, dataTypeProp, dataTypePropText, modelValue } = this
+      const { dataType, dataTypeProp, dataTypePropText, multiple, modelValue } = this
       if (dataType) {
-        return modelValue?.map(value => value instanceof dataType
-          ? { value: value[dataTypeProp], text: value[dataTypePropText] }
-          : value)
+        if (multiple) {
+          return modelValue?.map(value => value instanceof dataType
+            ? {
+                value: value[dataTypeProp],
+                text: value[dataTypePropText]
+              }
+            : value
+          )
+        } else {
+          return modelValue instanceof dataType
+            ? {
+                value: modelValue[dataTypeProp],
+                text: modelValue[dataTypePropText]
+              }
+            : modelValue
+        }
       } else {
         return modelValue
       }
@@ -130,8 +143,17 @@ export default {
     updateValue (value) {
       if (this.dataType) {
         const DataType = this.dataType
-        const typedValues = value.map(current => new DataType(current.value, current.text))
-        this.$emit('update:modelValue', typedValues)
+        if (this.multiple) {
+          const typedValues = value.map(current => new DataType(current.value, current.text))
+          this.$emit('update:modelValue', typedValues)
+        } else {
+          if (value == null) {
+            this.$emit('update:modelValue', null)
+          } else {
+            const typedValue = new DataType(value.value, value.text)
+            this.$emit('update:modelValue', typedValue)
+          }
+        }
       } else {
         this.$emit('update:modelValue', value)
       }

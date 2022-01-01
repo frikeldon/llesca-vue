@@ -29,7 +29,7 @@ export default {
     /** Indica si las opciones seleccionadas deben ocultarse de las opciones candidatas. */
     filterOptions: { type: Boolean, default: false },
     /** Valor o lista de valores seleccionados. */
-    modelValue: { type: Array, default: () => [] },
+    modelValue: { type: undefined, default: undefined },
     /** Indica si el campo es de solo lectura. */
     readonly: { type: Boolean, default: false },
     /** Indica si el campo permite seleccionar más de una opción. */

@@ -70,7 +70,9 @@ export default {
     /** Indica si la tabla debe dibujarse en modo compacto. */
     compact: { type: Boolean, default: false },
     /** Cabeceras HTTP a enviar con las peticiones. */
-    headers: { type: Object, default: () => {} }
+    headers: { type: Object, default: () => {} },
+    /** Indica si el componente no ha de cargar datos al montarse. */
+    disableAutoLoad: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -296,7 +298,9 @@ export default {
     }
   },
   mounted () {
-    this.loadData()
+    if (!this.disableAutoLoad) {
+      this.loadData()
+    }
   }
 }
 </script>

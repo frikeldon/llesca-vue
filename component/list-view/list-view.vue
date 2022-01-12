@@ -101,7 +101,12 @@ export default {
      * Se genera cuando el usuario hace clic sobre una celda.
      * @property {object} coords Objeto ({ row, column }) con el número de fila y columna pulsada.
      */
-    'clickCell'
+    'clickCell',
+    /**
+     * Se genera cuando se cambia de página.
+     * @property {number} index Número de página.
+     */
+    'pageChange'
   ],
   computed: {
     columns () {
@@ -277,6 +282,7 @@ export default {
       this.currentPage = index
       this.updateSelectedIndices([])
       this.loadData()
+      this.$emit('pageChange', index)
     },
     updateSelectedIndices (selectedIndices) {
       if (!(

@@ -5,13 +5,13 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/frikeldon/llesca-vue.git"
+    "url": "https://github.com/paudr/llesca-vue.git"
   },
   "peerDependencies": {
     "vue": "^3.0.0"
   },
   "dependencies": {
-    "fura-vue": "github:frikeldon/fura-vue"
+    "fura-vue": "github:paudr/fura-vue"
   },
   "devDependencies": {
     "@vue/compiler-sfc": "^3.2.4",

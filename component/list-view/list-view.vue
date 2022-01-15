@@ -133,17 +133,15 @@ export default {
               order.sentence === property.$select ||
               order.sentence === property.path
             )
-            return typeof property.label === 'string'
-              ? {
-                  title: property.label,
-                  align: property.align,
-                  icon: getOrderIcon(order),
-                  type: 'properties',
-                  grouped: false,
-                  property,
-                  propertyIndex
-                }
-              : undefined
+            return {
+              title: property.label,
+              align: property.align,
+              icon: getOrderIcon(order),
+              type: 'properties',
+              grouped: false,
+              property,
+              propertyIndex
+            }
           })
       ]
         .filter(property => property)
@@ -320,8 +318,8 @@ export default {
     :data-count="entitesLoaded"
     :pagination-position="paginationPosition"
     @update:selected-indices="updateSelectedIndices"
-    @clickHeader="$emit('clickHeader', $event)"
-    @clickCell="$emit('clickCell', $event)"
+    @click-header="$emit('clickHeader', $event)"
+    @click-cell="$emit('clickCell', $event)"
     @update:currentPage="goToPage"
   >
     <template #default="slotProps">

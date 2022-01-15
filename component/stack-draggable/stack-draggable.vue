@@ -76,11 +76,13 @@ export default {
     handleDrop (event) {
       const identifier = event.dataTransfer.getData(DATA_TYPE + this.name)
       const sourceIndex = this.modelValue.findIndex(item => item[this.primaryKey] === identifier)
-      const targetIndex = this.refElements.reduce((accumaletd, value) => (
-        value.el.getBoundingClientRect().bottom > event.pageY && value.index < accumaletd
-          ? value.index
-          : accumaletd
-      ), this.refElements.length)
+      const targetIndex = this.refElements
+        .filter(ref => ref.el)
+        .reduce((accumaletd, value) => (
+          value.el.getBoundingClientRect().bottom > event.pageY && value.index < accumaletd
+            ? value.index
+            : accumaletd
+        ), this.refElements.length)
       this.$emit('update:modelValue', moveItem(this.modelValue, sourceIndex, targetIndex))
     }
   },

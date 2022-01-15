@@ -42,7 +42,11 @@ export default {
     },
     updateKey (index, key) {
       const newValue = [...this.modelValue]
-      newValue[index] = { key, direction: newValue[index].direction }
+      if (key) {
+        newValue[index] = { key, direction: newValue[index].direction }
+      } else {
+        newValue.splice(index, 1)
+      }
       this.$emit('update:modelValue', newValue)
     },
     updateDirection (index, direction) {

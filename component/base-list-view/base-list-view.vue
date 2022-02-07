@@ -7,8 +7,8 @@ import { subarrayEquals } from '../../utils/collections.js'
 export default {
   name: 'LlescaBaseListView',
   components: {
-    FuraSpinNav,
-    FuraDetailsList
+    'fura-details-list': FuraDetailsList,
+    'fura-spin-nav': FuraSpinNav
   },
   directives: {
     content: directiveContent
@@ -156,7 +156,7 @@ export default {
 
 <template>
   <div :class="containerClass">
-    <FuraDetailsList
+    <fura-details-list
       class="llesca-listView"
       without-group-header
       :columns="columns"
@@ -227,9 +227,9 @@ export default {
           />
         </slot>
       </template>
-    </FuraDetailsList>
+    </fura-details-list>
 
-    <FuraSpinNav
+    <fura-spin-nav
       v-if="isPaginated && containerClass && paginationClass && rows.length > 0"
       class="llesca-navigation"
       :class="paginationClass"

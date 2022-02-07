@@ -85,11 +85,11 @@ export default {
       validator: value => Number.isInteger(value) && value >= 0 && value <= 21
     },
     /** Función para convertir de texto a número. */
-    parse: { type: Function, default: null },
+    parse: { type: Function, default: undefined },
     /** Función para convertir de número a texto cuando el campo tiene el foco. */
-    stringify: { type: Function, default: null },
+    stringify: { type: Function, default: undefined },
     /** Función para convertir de número a texto cuando el campo no tiene el foco. */
-    formatify: { type: Function, default: null },
+    formatify: { type: Function, default: undefined },
     /**
      * Alineación del texto cuando el campo no tiene el foco.
      * @values left, center, right

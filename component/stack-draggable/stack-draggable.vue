@@ -1,6 +1,4 @@
 <script>
-import FuraIcon from 'fura-vue/component/icon/index.js'
-
 const DATA_TYPE = 'text/llesca-key'
 
 function moveItem (items, source, target) {
@@ -25,7 +23,6 @@ function moveItem (items, source, target) {
 
 export default {
   name: 'LlescaStackDraggable',
-  components: { 'fura-icon': FuraIcon },
   props: {
     name: { type: String, default: () => String(Math.random()) },
     primaryKey: { type: String, required: true },

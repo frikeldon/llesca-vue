@@ -1,11 +1,9 @@
 <script>
-import FuraCheckbox from 'fura-vue/component/checkbox/index.js'
 import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldCheckbox',
   mixins: [Field],
-  components: { 'fura-checkbox': FuraCheckbox },
   props: {
     /** Nombre del campo en el formulario. */
     name: { type: String, default: null },

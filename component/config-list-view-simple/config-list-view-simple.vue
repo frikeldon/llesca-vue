@@ -1,12 +1,10 @@
 <script>
-import FuraDropdown from 'fura-vue/component/dropdown/index.js'
 import LlescaStackDraggable from '../stack-draggable/index.js'
 
 export default {
   name: 'LlescaConfigListViewSimple',
   components: {
-    'llesca-stack-draggable': LlescaStackDraggable,
-    'fura-dropdown': FuraDropdown
+    'llesca-stack-draggable': LlescaStackDraggable
   },
   props: {
     fields: { type: Array, required: true },

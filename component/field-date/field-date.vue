@@ -1,11 +1,9 @@
 <script>
-import FuraDatePicker from 'fura-vue/component/date-picker/index.js'
 import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldDate',
   mixins: [Field],
-  components: { 'fura-date-picker': FuraDatePicker },
   props: {
     /** Nombre del campo en el formulario. */
     name: { type: String, default: null },

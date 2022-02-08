@@ -20,7 +20,8 @@ export default async () => {
       filename: 'llesca-vue.js'
     },
     externals: {
-      vue: 'Vue'
+      vue: 'Vue',
+      'fura-vue': 'furaVue'
     },
     module: {
       rules: [

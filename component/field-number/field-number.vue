@@ -1,11 +1,9 @@
 <script>
-import FuraNumberField from 'fura-vue/component/number-field/index.js'
 import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldNumber',
   mixins: [Field],
-  components: { 'fura-number-field': FuraNumberField },
   props: {
     /** Nombre del campo en el formulario. */
     name: { type: String, default: null },

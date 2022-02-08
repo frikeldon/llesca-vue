@@ -1,15 +1,9 @@
 <script>
-import FuraDetailsList from 'fura-vue/component/details-list/index.js'
-import FuraSpinNav from 'fura-vue/component/spin-nav/index.js'
 import directiveContent from '../../directive/content.js'
 import { subarrayEquals } from '../../utils/collections.js'
 
 export default {
   name: 'LlescaBaseListView',
-  components: {
-    'fura-details-list': FuraDetailsList,
-    'fura-spin-nav': FuraSpinNav
-  },
   directives: {
     content: directiveContent
   },

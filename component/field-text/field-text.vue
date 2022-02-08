@@ -1,11 +1,9 @@
 <script>
-import FuraTextField from 'fura-vue/component/text-field/index.js'
 import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldText',
   mixins: [Field],
-  components: { 'fura-text-field': FuraTextField },
   props: {
     /** Nombre del campo en el formulario. */
     name: { type: String, default: null },

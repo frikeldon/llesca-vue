@@ -1,11 +1,9 @@
 <script>
-import FuraComboBox from 'fura-vue/component/combo-box/index.js'
 import Field from '../../mixin/field.js'
 
 export default {
   name: 'LlescaFieldCombo',
   mixins: [Field],
-  components: { 'fura-combo-box': FuraComboBox },
   props: {
     /** Nombre del campo en el formulario. */
     name: { type: String, default: null },

@@ -1,0 +1,92 @@
+.llesca-navTop[data-v-5dac9ed0] {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.llesca-navBottom[data-v-5dac9ed0] {
+  display: flex;
+  flex-direction: column;
+}
+.llesca-navigation[data-v-5dac9ed0] {
+  display: flex;
+}
+.llesca-navigation.llesca-left[data-v-5dac9ed0] {
+  justify-content: flex-start;
+}
+.llesca-navigation.llesca-center[data-v-5dac9ed0] {
+  justify-content: center;
+}
+.llesca-navigation.llesca-right[data-v-5dac9ed0] {
+  justify-content: flex-end;
+}
+.llesca-cell[data-v-5dac9ed0] {
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 0px 8px 0px 12px;
+  margin: 0;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  outline: 0;
+}
+.llesca-cell.llesca-grouped[data-v-5dac9ed0] {
+  color: var(--neutral-quaternary, #d2d0ce);
+}
+.fura-left .llesca-cell[data-v-5dac9ed0] {
+  justify-content: flex-start;
+}
+.fura-center .llesca-cell[data-v-5dac9ed0] {
+  justify-content: center;
+}
+.fura-right .llesca-cell[data-v-5dac9ed0] {
+  justify-content: flex-end;
+}
+.llesca-header[data-v-5dac9ed0] {
+  font-weight: 700;
+}
+.llesca-listView[data-v-5dac9ed0] thead[data-type="body-header"][data-level="0"] tr {
+  background-color: var(--neutral-lighter, #f3f2f1);
+  border-bottom: 1px solid var(--theme-primary, #0078d4);
+}
+
+.llesca-item[data-v-23432e2b] {
+  cursor: move;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+.llesca-content[data-v-23432e2b] {
+  cursor: default;
+  flex: 100% 1 1;
+}
+.llesca-handler[data-v-23432e2b] {
+  flex: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+.llesca-dragIcon[data-v-23432e2b] {
+  font-size: 24px;
+  flex: 24px 0 0;
+}
+.llesca-cover[data-v-23432e2b] {
+  flex: 100% 1 1;
+  cursor: default;
+}
+.llesca-hide[data-v-23432e2b] {
+  flex-basis: 5px;
+}
+
+.list-view-fields[data-v-52222d1a] {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  margin: 6px 0;
+}
+.list-view-field[data-v-52222d1a] {
+  flex: 100% 1 1;
+}
+.list-view-orderBy[data-v-52222d1a] {
+  flex: 125px 0 0;
+  margin-left: 15px;
+}
+

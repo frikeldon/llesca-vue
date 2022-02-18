@@ -18,6 +18,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-vue": "^7.20.0",
+    "husky": "^7.0.4",
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
     "mini-css-extract-plugin": "^2.5.3",
@@ -28,6 +29,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "lint": "eslint ./**/*.{js,vue}"
+    "lint": "eslint ./**/*.{js,vue}",
+    "prepare": "husky install"
   }
 }

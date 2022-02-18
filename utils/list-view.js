@@ -193,10 +193,10 @@ export function createRows (columns, data, { aggregate } = {}) {
 
 export function getOrderIcon (order, defaultOrder = null) {
   if ((order?.direction ?? defaultOrder) === 'asc') {
-    return 'SortDown'
+    return 'SortUp'
   }
   if ((order?.direction ?? defaultOrder) === 'desc') {
-    return 'SortUp'
+    return 'SortDown'
   }
   return null
 }

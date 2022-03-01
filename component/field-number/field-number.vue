@@ -185,6 +185,7 @@ export default {
 
 <template>
   <fura-number-field
+    ref="field"
     :label="label"
     :description="description"
     :invalid="invalid"

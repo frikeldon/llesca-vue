@@ -167,6 +167,7 @@ export default {
 
 <template>
   <fura-combo-box-async
+    ref="field"
     :label="label"
     :description="description"
     :invalid="invalid"

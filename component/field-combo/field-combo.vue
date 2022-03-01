@@ -156,6 +156,7 @@ export default {
 
 <template>
   <fura-combo-box
+    ref="field"
     :label="label"
     :description="description"
     :invalid="invalid"

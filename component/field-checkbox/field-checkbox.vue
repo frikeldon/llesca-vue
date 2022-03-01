@@ -89,6 +89,7 @@ export default {
 
 <template>
   <fura-checkbox
+    ref="field"
     :indeterminate="rawIndeterminate"
     :label="label"
     :box-side="boxSide"

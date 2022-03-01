@@ -181,6 +181,7 @@ export default {
 
 <template>
   <fura-date-picker
+    ref="field"
     :label="label"
     :description="description"
     :invalid="invalid"

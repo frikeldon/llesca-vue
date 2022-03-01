@@ -152,6 +152,7 @@ export default {
 
 <template>
   <llesca-field-combo-async
+    ref="field"
     :name="name"
     :label="label"
     :description="description"

@@ -136,6 +136,7 @@ export default {
 
 <template>
   <fura-text-field
+    ref="field"
     :label="label"
     :description="description"
     :invalid="invalid"

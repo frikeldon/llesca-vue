@@ -82,10 +82,11 @@ export default {
      * @returns {Promise} Una promesa que se resuelve cuando todos los datos estan cargados.
      * @public
      */
-    async loadData () {
-      for (const [, { field }] of this.fields) {
-        await field.loadData?.()
-      }
+    loadData () {
+      return Promise.all(
+        this.fields.entries()
+          .map(([, { field }]) => field.loadData?.())
+      )
     },
     registerField (name, field) {
       if (!name || typeof name !== 'string') {

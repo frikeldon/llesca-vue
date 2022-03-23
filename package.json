@@ -8,7 +8,7 @@
     "url": "https://github.com/paudr/llesca-vue.git"
   },
   "dependencies": {
-    "fura-vue": "github:paudr/fura-vue#v0.6.0"
+    "fura-vue": "github:paudr/fura-vue#v0.6.2"
   },
   "devDependencies": {
     "css-loader": "^6.6.0",

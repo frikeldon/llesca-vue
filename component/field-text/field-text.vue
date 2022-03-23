@@ -101,13 +101,13 @@ export default {
     async validate (options = {}) {
       this.errorMessage = ''
 
-      if (this.rawValue) {
-        if (!options.ignoreAll && !options.ignoreMaxlength && this.maxlength !== null && this.rawValue.length > this.maxlength) {
+      if (this.modelValue) {
+        if (!options.ignoreAll && !options.ignoreMaxlength && this.maxlength !== null && this.modelValue.length > this.maxlength) {
           this.errorMessage = options.maxlengthMessage ?? `La longitud màxima es de ${this.maxlength} caracters.`
           return false
         }
 
-        if (!options.ignoreAll && !options.ignorePattern && this.pattern && !this.rawValue.match(this.pattern)) {
+        if (!options.ignoreAll && !options.ignorePattern && this.pattern && !this.modelValue.match(this.pattern)) {
           this.errorMessage = options.patternMessage ?? 'El valor del text no compleix el patró especificat.'
           return false
         }
@@ -154,7 +154,7 @@ export default {
     :maxlength="maxlength"
     :unresizable="unresizable"
     :auto-adjust-height="autoAdjustHeight"
-    :model-value="rawValue"
+    :model-value="modelValue"
     @update:model-value="handleUpdateModelValue"
     @click="$emit('click')"
     @focus="$emit('focus', $event)"

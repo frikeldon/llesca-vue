@@ -1,3 +1,5 @@
+import packageJson from './package.json'
+
 import BaseListView from './component/base-list-view/index.js'
 import ConfigListViewSimple from './component/config-list-view-simple/index.js'
 import FieldCheckbox from './component/field-checkbox/index.js'
@@ -13,7 +15,7 @@ import ListView from './component/list-view/index.js'
 import ListViewAggregated from './component/list-view-aggregated/index.js'
 import StackDraggable from './component/stack-draggable/index.js'
 
-export const components = {
+export const component = {
   BaseListView,
   ConfigListViewSimple,
   FieldCheckbox,
@@ -30,9 +32,15 @@ export const components = {
   StackDraggable
 }
 
-export default function install (app, { prefix = 'llesca' } = {}) {
-  for (const name in components) {
+export function install (app, { prefix = 'llesca' } = {}) {
+  for (const name in component) {
     const kebabName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
-    app.component('llesca-' + kebabName, components[name])
+    app.component('llesca-' + kebabName, component[name])
   }
+}
+
+export default {
+  install,
+  components: component,
+  version: packageJson.version
 }

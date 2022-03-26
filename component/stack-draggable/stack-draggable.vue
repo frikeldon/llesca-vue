@@ -36,7 +36,6 @@ export default {
   emits: ['update:modelValue'],
   data () {
     return {
-      currentY: null,
       refElements: []
     }
   },
@@ -49,17 +48,6 @@ export default {
     }
   },
   methods: {
-    getItemHeights () {
-      const widths = []
-      let accumulatedWidth = 0
-      for (const { item, index, el } of this.refElements) {
-        const rect = el.getBoundingClientRect()
-        const { width } = rect
-        accumulatedWidth += width
-        widths.push({ item, index, width, accumulatedWidth })
-      }
-      return widths
-    },
     handleDragStart (event, key) {
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.droptAllowed = 'move'

@@ -79,13 +79,13 @@ export default {
           class="list-view-field"
           :options="fieldOptions"
           :model-value="slotProps.item.key"
-          @update:modelValue="updateKey(slotProps.index, $event)"
+          @update:model-value="updateKey(slotProps.index, $event)"
         />
         <fura-dropdown
           class="list-view-orderBy"
           :options="getOrderByOptions(slotProps.item.key)"
           :model-value="slotProps.item.direction"
-          @update:modelValue="updateDirection(slotProps.index, $event)"
+          @update:model-value="updateDirection(slotProps.index, $event)"
         />
         <div />
       </div>
@@ -95,7 +95,7 @@ export default {
         <fura-dropdown
           class="list-view-field"
           :options="fieldOptions"
-          @update:modelValue="addNewItem"
+          @update:model-value="addNewItem"
         />
         <div class="list-view-orderBy" />
       </div>

@@ -282,9 +282,9 @@ export default {
     :current-page="currentPage"
     :data-count="entitesLoaded"
     :pagination-position="paginationPosition"
-    @clickHeader="$emit('clickHeader', $event)"
-    @clickCell="$emit('clickCell', $event)"
-    @update:currentPage="goToPage"
+    @click-header="$emit('clickHeader', $event)"
+    @click-cell="$emit('clickCell', $event)"
+    @update:current-page="goToPage"
   >
     <template #default="slotProps">
       <!--

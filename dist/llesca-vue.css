@@ -76,16 +76,16 @@
   flex-basis: 5px;
 }
 
-.list-view-fields[data-v-52222d1a] {
+.list-view-fields[data-v-22d65754] {
   display: flex;
   align-items: center;
   justify-content: stretch;
   margin: 6px 0;
 }
-.list-view-field[data-v-52222d1a] {
+.list-view-field[data-v-22d65754] {
   flex: 100% 1 1;
 }
-.list-view-orderBy[data-v-52222d1a] {
+.list-view-orderBy[data-v-22d65754] {
   flex: 125px 0 0;
   margin-left: 15px;
 }

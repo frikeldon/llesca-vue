@@ -84,7 +84,7 @@ export default {
      */
     loadData () {
       return Promise.all(
-        this.fields.entries()
+        Array.from(this.fields.entries())
           .map(([, { field }]) => field.loadData?.())
       )
     },

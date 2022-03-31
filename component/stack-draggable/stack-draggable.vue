@@ -1,4 +1,5 @@
 <script>
+import { Comment } from 'vue'
 const DATA_TYPE = 'text/llesca-key'
 
 function moveItem (items, source, target) {

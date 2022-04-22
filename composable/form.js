@@ -3,6 +3,12 @@ import { ref, reactive, computed, unref, isRef } from 'vue'
 export function useForm () {
   const fields = reactive(new Map())
 
+  const formValues = computed(() => Object.fromEntries(
+    [...fields.entries()].map(([name, { value }]) =>
+      [name, unref(value)]
+    )
+  ))
+
   function createField (name, value, { rules, skip } = {}) {
     const errorMessage = ref(null)
 
@@ -15,7 +21,7 @@ export function useForm () {
       const rulesUnref = unref(rules)
       if (rulesUnref && !unref(skip)) {
         for (const rule of rulesUnref) {
-          const maybePromise = rule(unref(value))
+          const maybePromise = rule(unref(value), unref(formValues))
           const result = maybePromise instanceof Promise
             ? await maybePromise
             : maybePromise
@@ -49,11 +55,7 @@ export function useForm () {
 
   return {
     fields: computed(() => [...fields.keys()]),
-    values: computed(() => Object.fromEntries(
-      [...fields.entries()].map(([name, { value }]) =>
-        [name, unref(value)]
-      )
-    )),
+    values: formValues,
     createField,
     validate
   }

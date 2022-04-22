@@ -12,10 +12,6 @@ export function useForm () {
   function createField (name, value, { rules, skip } = {}) {
     const errorMessage = ref(null)
 
-    function destroy () {
-      fields.delete(name)
-    }
-
     async function validate () {
       errorMessage.value = null
       const rulesUnref = unref(rules)
@@ -32,6 +28,10 @@ export function useForm () {
         }
       }
       return true
+    }
+
+    function destroy () {
+      fields.delete(name)
     }
 
     fields.set(name, { value, validate })

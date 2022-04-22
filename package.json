@@ -1,0 +1,10 @@
+{
+  "name": "llesca-vue",
+  "version": "0.2.0",
+  "description": "Componentes Vue para aplicaciones de gestion.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paudr/llesca-vue.git"
+  }
+}

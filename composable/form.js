@@ -25,13 +25,21 @@ export function useForm () {
       return true
     }
 
-    fields.set(name, { value })
+    fields.set(name, { value, validate })
 
     return {
       errorMessage,
       destroy,
       validate
     }
+  }
+
+  function validate () {
+    let isValid = true
+    for (const { validate } of fields.values()) {
+      isValid = validate() && isValid
+    }
+    return isValid
   }
 
   return {
@@ -41,6 +49,7 @@ export function useForm () {
         [name, unref(value)]
       )
     )),
-    createField
+    createField,
+    validate
   }
 }

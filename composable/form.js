@@ -10,12 +10,15 @@ export function useForm () {
       fields.delete(name)
     }
 
-    function validate () {
+    async function validate () {
       errorMessage.value = null
       const rulesUnref = unref(rules)
       if (rulesUnref) {
         for (const rule of rulesUnref) {
-          const result = rule(unref(value))
+          const maybePromise = rule(unref(value))
+          const result = maybePromise instanceof Promise
+            ? await maybePromise
+            : maybePromise
           if (result && typeof result === 'string') {
             errorMessage.value = result
             return false
@@ -34,10 +37,10 @@ export function useForm () {
     }
   }
 
-  function validate () {
+  async function validate () {
     let isValid = true
     for (const { validate } of fields.values()) {
-      isValid = validate() && isValid
+      isValid = await validate() && isValid
     }
     return isValid
   }

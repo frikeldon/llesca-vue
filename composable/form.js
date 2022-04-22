@@ -1,9 +1,9 @@
-import { ref, reactive, computed, unref } from 'vue'
+import { ref, reactive, computed, unref, isRef } from 'vue'
 
 export function useForm () {
   const fields = reactive(new Map())
 
-  function createField (name, value, { rules } = {}) {
+  function createField (name, value, { rules, skip } = {}) {
     const errorMessage = ref(null)
 
     function destroy () {
@@ -13,7 +13,7 @@ export function useForm () {
     async function validate () {
       errorMessage.value = null
       const rulesUnref = unref(rules)
-      if (rulesUnref) {
+      if (rulesUnref && !unref(skip)) {
         for (const rule of rulesUnref) {
           const maybePromise = rule(unref(value))
           const result = maybePromise instanceof Promise
@@ -31,7 +31,9 @@ export function useForm () {
     fields.set(name, { value, validate })
 
     return {
-      errorMessage,
+      errorMessage: isRef(skip)
+        ? computed(() => skip.value ? null : unref(errorMessage))
+        : errorMessage,
       destroy,
       validate
     }

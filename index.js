@@ -15,3 +15,5 @@ export default {
   Llesca: component,
   version: packageJson.version
 }
+
+export { useForm } from './composable/form.js'

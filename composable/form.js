@@ -30,18 +30,23 @@ export function useForm () {
       return true
     }
 
+    function clean () {
+      errorMessage.value = null
+    }
+
     function destroy () {
       fields.delete(name)
     }
 
-    fields.set(name, { value, validate })
+    fields.set(name, { value, validate, clean })
 
     return {
       errorMessage: isRef(skip)
         ? computed(() => skip.value ? null : unref(errorMessage))
         : errorMessage,
       destroy,
-      validate
+      validate,
+      clean
     }
   }
 
@@ -53,10 +58,17 @@ export function useForm () {
     return isValid
   }
 
+  function clean () {
+    for (const { clean } of fields.values()) {
+      clean()
+    }
+  }
+
   return {
     fields: computed(() => [...fields.keys()]),
     values: formValues,
     createField,
-    validate
+    validate,
+    clean
   }
 }

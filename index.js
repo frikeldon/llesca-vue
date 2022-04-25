@@ -8,6 +8,7 @@ import FieldNumber from './component/field-number/index.js'
 import FieldNumberSpin from './component/field-number-spin/index.js'
 import FieldTag from './component/field-tag/index.js'
 import FieldText from './component/field-text/index.js'
+import StackDraggable from './component/stack-draggable/index.js'
 
 export const component = {
   FieldCombo,
@@ -17,7 +18,8 @@ export const component = {
   FieldNumber,
   FieldNumberSpin,
   FieldTag,
-  FieldText
+  FieldText,
+  StackDraggable
 }
 
 export function install (app, { prefix = 'llesca' } = {}) {

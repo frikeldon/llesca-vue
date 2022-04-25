@@ -107,7 +107,7 @@ const $emit = defineEmits([
 const rules = computed(() => {
   return [
     $props.required &&
-      (value => !value && 'Aquest camp es requerit.'),
+      (value => typeof value !== 'number' && 'Aquest camp es requerit.'),
 
     $props.min !== null &&
       (value => typeof value === 'number' && value < $props.min && `El valor mínim es ${$props.min}.`),

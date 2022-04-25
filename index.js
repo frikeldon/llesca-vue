@@ -1,9 +1,11 @@
 import packageJson from './package.json'
 
+import FieldDate from './component/field-date/index.js'
 import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
 
 export const component = {
+  FieldDate,
   FieldNumber,
   FieldText
 }

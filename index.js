@@ -1,6 +1,9 @@
 import packageJson from './package.json'
 
+import FieldText from './component/field-text/index.js'
+
 export const component = {
+  FieldText
 }
 
 export function install (app, { prefix = 'llesca' } = {}) {

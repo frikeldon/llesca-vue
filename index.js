@@ -5,6 +5,7 @@ import FieldComboAsync from './component/field-combo-async/index.js'
 import FieldDate from './component/field-date/index.js'
 import FieldDropdown from './component/field-dropdown/index.js'
 import FieldNumber from './component/field-number/index.js'
+import FieldNumberSpin from './component/field-number-spin/index.js'
 import FieldText from './component/field-text/index.js'
 
 export const component = {
@@ -13,6 +14,7 @@ export const component = {
   FieldDate,
   FieldDropdown,
   FieldNumber,
+  FieldNumberSpin,
   FieldText
 }
 

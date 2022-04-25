@@ -16,4 +16,4 @@ export default {
   version: packageJson.version
 }
 
-export { useForm } from './composable/form.js'
+export { useValidations } from './composable/validations.js'

@@ -1,8 +1,10 @@
 import packageJson from './package.json'
 
+import FieldNumber from './component/field-number/index.js'
 import FieldText from './component/field-text/index.js'
 
 export const component = {
+  FieldNumber,
   FieldText
 }
 

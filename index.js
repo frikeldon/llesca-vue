@@ -1,6 +1,7 @@
 import packageJson from './package.json'
 
 import FieldCombo from './component/field-combo/index.js'
+import FieldComboAsync from './component/field-combo-async/index.js'
 import FieldDate from './component/field-date/index.js'
 import FieldDropdown from './component/field-dropdown/index.js'
 import FieldNumber from './component/field-number/index.js'
@@ -8,6 +9,7 @@ import FieldText from './component/field-text/index.js'
 
 export const component = {
   FieldCombo,
+  FieldComboAsync,
   FieldDate,
   FieldDropdown,
   FieldNumber,

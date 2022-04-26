@@ -136,7 +136,7 @@ function handleUpdateModelValue ($event) {
 function handleBlur ($event) {
   $emit('blur', $event)
   if ($props.autoValidate === 'blur') {
-    validateDebounced.value()
+    validate()
   }
 }
 

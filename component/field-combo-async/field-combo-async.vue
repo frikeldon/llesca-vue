@@ -36,7 +36,7 @@ const $props = defineProps({
   /** Método para registrar un campo en el formulario. */
   createField: { type: Function, default: null },
   /** Nombre del campo de formulario. */
-  name: { type: [String, Symbol], default: Symbol('fieldText') },
+  name: { type: [String, Symbol], default: () => Symbol('fieldText') },
   /** Opcion o lista de opciones seleccionadas. */
   modelValue: { type: undefined, default: undefined },
   /** Estado requerido del campo de formulario asociado. */

@@ -36,7 +36,7 @@ const $props = defineProps({
   /** Método para registrar un campo en el formulario. */
   createField: { type: Function, default: null },
   /** Nombre del campo de formulario. */
-  name: { type: [String, Symbol], default: Symbol('fieldText') },
+  name: { type: [String, Symbol], default: () => Symbol('fieldText') },
   /** Función para convertir de fecha a texto cuando el campo no tiene el foco. */
   stringify: {
     type: Function,

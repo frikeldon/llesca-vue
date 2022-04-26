@@ -1,5 +1,5 @@
 <script setup>
-import { computed, toRef, nextTick } from 'vue'
+import { computed, toRef, onBeforeUnmount, nextTick } from 'vue'
 import debounce from '../../utils/debounce'
 
 const $props = defineProps({
@@ -83,7 +83,7 @@ const rules = computed(() => {
     .filter(rule => rule)
 })
 
-const { errorMessage, validate, clear } = $props.createField
+const { errorMessage, validate, clear, destroy } = $props.createField
   ? $props.createField(
     $props.name,
     toRef($props, 'modelValue'),
@@ -95,7 +95,8 @@ const { errorMessage, validate, clear } = $props.createField
   : {
       errorMessage: null,
       validate: () => true,
-      clear: () => {}
+      clear: () => {},
+      destroy: () => {}
     }
 
 defineExpose({
@@ -120,6 +121,8 @@ function handleBlur ($event) {
     validateDebounced.value()
   }
 }
+
+onBeforeUnmount(destroy)
 </script>
 
 <template>

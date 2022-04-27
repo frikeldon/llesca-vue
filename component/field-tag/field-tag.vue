@@ -1,5 +1,5 @@
 <script setup>
-import { computed, toRef, onBeforeUnmount, nextTick } from 'vue'
+import { computed, toRef, watch, onBeforeUnmount, nextTick } from 'vue'
 import debounce from '../../utils/debounce'
 
 const $props = defineProps({
@@ -55,7 +55,9 @@ const $props = defineProps({
     validator: value => !value || ['update', 'blur'].includes(value)
   },
   /** Milisegundos sin cambiar el valor para realizar una validación. */
-  autoValidateWait: { type: Number, default: 0 }
+  autoValidateWait: { type: Number, default: 0 },
+  /** El componente elimina el valor del campo cuando el componente se deshabilita. */
+  clearValueOnDisabled: { type: Boolean, default: false }
 })
 
 const $emit = defineEmits([
@@ -119,6 +121,12 @@ function handleBlur ($event) {
     validate()
   }
 }
+
+watch(() => $props.disabled, value => {
+  if (value && $props.clearValueOnDisabled) {
+    $emit('update:modelValue', [])
+  }
+})
 
 onBeforeUnmount(destroy)
 </script>

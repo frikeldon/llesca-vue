@@ -109,6 +109,7 @@ const validateDebounced = computed(() =>
 )
 
 function handleUpdateModelValue ($event) {
+  errorMessage.value = ''
   $emit('update:modelValue', $event)
   if ($props.autoValidate === 'update') {
     nextTick(() => validateDebounced.value())

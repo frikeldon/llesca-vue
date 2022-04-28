@@ -131,6 +131,13 @@ watch(() => $props.disabled, value => {
   }
 })
 
+watch(() => $props.options, value => {
+  const hasModelValue = value.some(option => option.value === $props.modelValue)
+  if (!hasModelValue) {
+    $emit('update:modelValue', null)
+  }
+})
+
 onBeforeUnmount(destroy)
 </script>
 

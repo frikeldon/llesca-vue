@@ -1,5 +1,5 @@
 <script setup>
-import { computed, toRef, watch, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, toRef, watch, onBeforeUnmount, nextTick } from 'vue'
 import debounce from '../../utils/debounce'
 
 const $props = defineProps({
@@ -97,7 +97,7 @@ const { errorMessage, validate, clear, destroy } = $props.createField
     }
   )
   : {
-      errorMessage: null,
+      errorMessage: ref(null),
       validate: () => true,
       clear: () => {},
       destroy: () => {}

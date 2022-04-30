@@ -129,7 +129,7 @@ function handleBlur ($event) {
 
 watch(() => $props.disabled, value => {
   if (value && $props.clearValueOnDisabled) {
-    $emit('update:modelValue', null)
+    $emit('update:modelValue', $props.multiple ? [] : null)
   }
 })
 

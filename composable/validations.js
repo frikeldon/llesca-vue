@@ -1,4 +1,4 @@
-import { ref, reactive, computed, unref, isRef } from 'vue'
+import { ref, reactive, computed, unref, isRef, watch } from 'vue'
 
 export function useValidations () {
   const fields = reactive(new Map())
@@ -40,6 +40,8 @@ export function useValidations () {
     }
 
     fields.set(name, { value, validate, clean })
+
+    watch(value, () => { errorMessage.value = null })
 
     return {
       errorMessage: isRef(skip)

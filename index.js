@@ -35,4 +35,10 @@ export default {
   version: packageJson.version
 }
 
+export { useEntity } from './composable/entity.js'
+export { useFetchGet } from './composable/fetch-get.js'
+export { useOptionsLoader } from './composable/options-loader.js'
+export { useUrl } from './composable/url.js'
 export { useValidations } from './composable/validations.js'
+
+export * as odata from './utils/odata.js'

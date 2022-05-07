@@ -13,12 +13,12 @@ export function useValidations () {
   function createField (name, value, { rules, skip } = {}) {
     const errorMessage = ref(null)
 
-    async function validate () {
+    async function validate (...args) {
       errorMessage.value = null
       const rulesUnref = unref(rules)
       if (rulesUnref && !unref(skip)) {
         for (const rule of rulesUnref) {
-          const maybePromise = rule(unref(value), unref(formValues))
+          const maybePromise = rule(unref(value), unref(formValues), ...args)
           const result = maybePromise instanceof Promise
             ? await maybePromise
             : maybePromise
@@ -56,12 +56,12 @@ export function useValidations () {
   function createValidation (name, { rules, skip } = {}) {
     const errorMessage = ref(null)
 
-    async function validate () {
+    async function validate (...args) {
       errorMessage.value = null
       const rulesUnref = unref(rules)
       if (rulesUnref && !unref(skip)) {
         for (const rule of rulesUnref) {
-          const maybePromise = rule(unref(formValues))
+          const maybePromise = rule(unref(formValues), ...args)
           const result = maybePromise instanceof Promise
             ? await maybePromise
             : maybePromise
@@ -94,13 +94,13 @@ export function useValidations () {
     }
   }
 
-  async function validate () {
+  async function validate (...args) {
     let isValid = true
     for (const { validate } of fields.values()) {
-      isValid = await validate() && isValid
+      isValid = await validate(...args) && isValid
     }
     for (const { validate } of validations.values()) {
-      isValid = await validate() && isValid
+      isValid = await validate(...args) && isValid
     }
     return isValid
   }

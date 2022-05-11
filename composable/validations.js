@@ -3,6 +3,17 @@ import { ref, reactive, computed, unref, isRef, watch } from 'vue'
 export function useValidations () {
   const fields = reactive(new Map())
   const validations = reactive(new Map())
+  const changeHandlers = []
+
+  function onChange (handler) {
+    changeHandlers.push(handler)
+  }
+
+  function emitChange (event) {
+    for (const handler of changeHandlers) {
+      handler(event)
+    }
+  }
 
   const formValues = computed(() => Object.fromEntries(
     [...fields.entries()].map(([name, { value }]) =>
@@ -41,7 +52,10 @@ export function useValidations () {
 
     fields.set(name, { value, validate, clean })
 
-    watch(value, () => { errorMessage.value = null })
+    watch(value, (value, oldValue) => {
+      errorMessage.value = null
+      emitChange({ name, value, oldValue })
+    })
 
     return {
       errorMessage: isRef(skip)
@@ -121,6 +135,7 @@ export function useValidations () {
     createField,
     createValidation,
     validate,
-    clean
+    clean,
+    onChange
   }
 }

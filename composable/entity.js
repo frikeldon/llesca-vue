@@ -173,6 +173,7 @@ function createInterface (entity, apiUrl, headers) {
     },
 
     setDetail (name, value) {
+      entity.detail = entity.detail || {}
       entity.detail[name] = toRaw(value)
     },
 

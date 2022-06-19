@@ -10,7 +10,7 @@ const internalState = Symbol('state')
  * @param {string} definition.entityName Nombre de la entidad.
  * @param {string} definition.primaryKey Nombre de la propiedad principal.
  * @param {string} definition.foreingKey Nombre de la propiedad que relacion con la entidad padre.
- * @param {array} definition.childs Definiciones de las entidades hijas.
+ * @param {array} definition.children Definiciones de las entidades hijas.
  * @param {array} definition.details Definiciones de las entidades y propiedades de detalle.
  * @param {array} definition.dateKeys Nombre de las propiedades de tipo fecha.
  * @returns Interfaz para gestionar los datos de la entidad.
@@ -34,9 +34,9 @@ function createEntityStructure ({
     definition: markRaw(definition),
     id,
     data,
-    child: Array.isArray(definition.childs)
+    child: Array.isArray(definition.children)
       ? Object.fromEntries(
-        definition.childs.map(childSchema => [
+        definition.children.map(childSchema => [
           childSchema.navigationKey || childSchema.entityName,
           { nextId: 1, entities: [], deletedEntities: [] }
         ])
@@ -181,7 +181,7 @@ function createInterface (entity, apiUrl, headers) {
 
     createChildData (name, data) {
       entity.child[name].entities.push(createEntityStructure({
-        definition: markRaw(entity.definition.childs.find(childDefinition => childDefinition.entityName === name)),
+        definition: markRaw(entity.definition.children.find(childDefinition => childDefinition.entityName === name)),
         id: entity.child[name].nextId++,
         data: assignForeignKey(entity, name, data),
         state: 'create',
@@ -208,7 +208,7 @@ function createInterface (entity, apiUrl, headers) {
 
     createNewChild (name) {
       const childEntity = reactive(createEntityStructure({
-        definition: markRaw(entity.definition.childs.find(childDefinition =>
+        definition: markRaw(entity.definition.children.find(childDefinition =>
           childDefinition.navigationKey === name ||
           childDefinition.entityName === name
         )),
@@ -249,9 +249,9 @@ function createInterface (entity, apiUrl, headers) {
 
 function getExpandQuery (definition) {
   const expands = []
-  for (const child of definition.childs || []) {
+  for (const child of definition.children || []) {
     const navigation = child.navigationKey || child.entityName
-    if (child.childs?.length > 0 || child.details?.length > 0) {
+    if (child.children?.length > 0 || child.details?.length > 0) {
       expands.push(`${navigation}($expand=${getExpandQuery(child)})`)
     } else {
       expands.push(navigation)
@@ -271,7 +271,7 @@ function getExpandQuery (definition) {
 }
 
 function setLoadedData (entity, data) {
-  for (const child of entity.definition.childs || []) {
+  for (const child of entity.definition.children || []) {
     const navigation = child.navigationKey || child.entityName
     const childData = data[navigation]
     delete data[navigation]
@@ -279,7 +279,7 @@ function setLoadedData (entity, data) {
     for (const current of childData || []) {
       const newChild = createEntityStructure({
         definition: markRaw(
-          entity.definition.childs.find(childDefinition =>
+          entity.definition.children.find(childDefinition =>
             childDefinition.navigationKey === navigation ||
             childDefinition.entityName === navigation
           )
@@ -368,7 +368,7 @@ function markAsUpdated (entity) {
 }
 
 function assignForeignKey (parentEntity, childName, data) {
-  const childDefinition = parentEntity.definition.childs.find(childDefinition =>
+  const childDefinition = parentEntity.definition.children.find(childDefinition =>
     childDefinition.navigationKey === childName ||
     childDefinition.entityName === childName
   )
@@ -410,8 +410,8 @@ function convertDates (definition, data) {
       }
     }
   }
-  if (Array.isArray(definition.childs)) {
-    for (const definitionChild of definition.childs) {
+  if (Array.isArray(definition.children)) {
+    for (const definitionChild of definition.children) {
       const navigation = definitionChild.navigation || definitionChild.entityName
       if (Array.isArray(data[navigation])) {
         for (const dataChild of data[navigation]) {

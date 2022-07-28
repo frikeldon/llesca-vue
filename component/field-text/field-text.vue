@@ -92,11 +92,11 @@ const rules = computed(() => {
     $props.required &&
       (value => !value && 'Aquest camp es requerit.'),
 
-    !!$props.maxlength > 0 &&
+    $props.maxlength !== null &&
       (value => value?.length > $props.maxlength && `La longitud màxima es de ${$props.maxlength} caracters.`),
 
-    !!$props.pattern &&
-      (value => !value?.match($props.pattern) && 'El valor del text no compleix el patró especificat.'),
+    $props.pattern !== null &&
+      (value => !!value && !value?.match($props.pattern) && 'El valor del text no compleix el patró especificat.'),
 
     ...($props.rules || [])
   ]

@@ -150,7 +150,7 @@ function createInterface (entity, apiUrl, headers) {
       delete response['@odata.context']
       convertDates(toRaw(entity.definition), response)
       setLoadedData(entity, response)
-      entity.id = id
+      entity.id = entity.data[entity.definition.primaryKey]
     },
 
     async save () {

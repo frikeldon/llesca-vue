@@ -13,6 +13,8 @@ const internalState = Symbol('state')
  * @param {array} definition.children Definiciones de las entidades hijas.
  * @param {array} definition.details Definiciones de las entidades y propiedades de detalle.
  * @param {array} definition.dateKeys Nombre de las propiedades de tipo fecha.
+ * @param {string} apiUrl URL de la api OData.
+ * @param {object} headers Cabeceras HTTP a enviar con las peticiones OData.
  * @returns Interfaz para gestionar los datos de la entidad.
  */
 export function useEntity (definition, apiUrl, headers) {
@@ -140,9 +142,11 @@ function createInterface (entity, apiUrl, headers) {
     /* Sincronizacion de datos con el servidor */
 
     async load (id) {
-      const response = await requestGet([apiUrl, `${entity.definition.entityName}(${id})`], {
-        $expand: getExpandQuery(toRaw(entity.definition))
-      })
+      const response = await requestGet(
+        [apiUrl, `${entity.definition.entityName}(${id})`],
+        { $expand: getExpandQuery(toRaw(entity.definition)) },
+        headers
+      )
       delete response['@odata.context']
       convertDates(toRaw(entity.definition), response)
       setLoadedData(entity, response)
@@ -151,11 +155,11 @@ function createInterface (entity, apiUrl, headers) {
 
     async save () {
       if (entity.state === 'create') {
-        return await requestPost([apiUrl, entity.definition.entityName], getRequestData(entity))
+        return await requestPost([apiUrl, entity.definition.entityName], getRequestData(entity), null, headers)
       } else {
         const requests = getSaveRequests(entity)
         if (requests?.length > 0) {
-          return await requestBatch(apiUrl, requests)
+          return await requestBatch(apiUrl, requests, headers)
         }
       }
     },

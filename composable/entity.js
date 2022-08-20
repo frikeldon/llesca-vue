@@ -152,11 +152,12 @@ function createInterface (entity, apiUrl, headers) {
 
     async save () {
       if (entity.state === 'create') {
-        const payload = getRequestData(entity)
-        if (payload[entity.definition.primaryKey] == null) {
-          payload[entity.definition.primaryKey] = undefined
-        }
-        const response = await requestPost([apiUrl, entity.definition.entityName], payload, null, headers)
+        const response = await requestPost(
+          [apiUrl, entity.definition.entityName],
+          getRequestData(entity, { removePrimaryKey: true }),
+          null,
+          headers
+        )
         assignDownloadedDataToEntity(entity, response)
         return response
       } else {
@@ -308,13 +309,16 @@ function setLoadedData (entity, data) {
   entity.state = 'read'
 }
 
-function getRequestData (entity) {
+function getRequestData (entity, { removePrimaryKey }) {
   const data = { ...entity.data }
   for (const name in entity.child) {
     data[name] = []
     for (const childEntity of entity.child[name].entities) {
       data[name].push(getRequestData(childEntity))
     }
+  }
+  if (removePrimaryKey) {
+    data[entity.definition.primaryKey] = undefined
   }
   return data
 }
@@ -329,7 +333,7 @@ function getSaveRequests (entity, prefix = null) {
       id: `saveEntity/${requestId}-create`,
       method: 'POST',
       url: entity.definition.entityName,
-      body: getRequestData(entity)
+      body: getRequestData(entity, { removePrimaryKey: true })
     }]
   } else {
     const requests = []

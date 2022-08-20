@@ -203,4 +203,5 @@ export async function requestBatch (path, requests, headers) {
   if (withError) {
     throw new HttpBatchResponseError(withError, responses)
   }
+  return responses
 }

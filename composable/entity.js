@@ -155,7 +155,11 @@ function createInterface (entity, apiUrl, headers) {
 
     async save () {
       if (entity.state === 'create') {
-        return await requestPost([apiUrl, entity.definition.entityName], getRequestData(entity), null, headers)
+        const payload = getRequestData(entity)
+        if (payload[entity.definition.primaryKey] == null) {
+          payload[entity.definition.primaryKey] = undefined
+        }
+        return await requestPost([apiUrl, entity.definition.entityName], payload, null, headers)
       } else {
         const requests = getSaveRequests(entity)
         if (requests?.length > 0) {

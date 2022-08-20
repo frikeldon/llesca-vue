@@ -147,10 +147,7 @@ function createInterface (entity, apiUrl, headers) {
         { $expand: getExpandQuery(toRaw(entity.definition)) },
         headers
       )
-      delete response['@odata.context']
-      convertDates(toRaw(entity.definition), response)
-      setLoadedData(entity, response)
-      entity.id = entity.data[entity.definition.primaryKey]
+      assignDownloadedDataToEntity(entity, response)
     },
 
     async save () {
@@ -159,7 +156,9 @@ function createInterface (entity, apiUrl, headers) {
         if (payload[entity.definition.primaryKey] == null) {
           payload[entity.definition.primaryKey] = undefined
         }
-        return await requestPost([apiUrl, entity.definition.entityName], payload, null, headers)
+        const response = await requestPost([apiUrl, entity.definition.entityName], payload, null, headers)
+        assignDownloadedDataToEntity(entity, response)
+        return response
       } else {
         const requests = getSaveRequests(entity)
         if (requests?.length > 0) {
@@ -429,4 +428,12 @@ function convertDates (definition, data) {
     }
   }
   return data
+}
+
+function assignDownloadedDataToEntity (entity, response) {
+  const copy = JSON.parse(JSON.stringify(response))
+  delete copy['@odata.context']
+  convertDates(toRaw(entity.definition), copy)
+  setLoadedData(entity, copy)
+  entity.id = entity.data[entity.definition.primaryKey]
 }

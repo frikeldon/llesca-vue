@@ -148,6 +148,7 @@ function createInterface (entity, apiUrl, headers) {
         headers
       )
       assignDownloadedDataToEntity(entity, response)
+      entity.id = entity.data[entity.definition.primaryKey]
     },
 
     async save () {
@@ -159,6 +160,7 @@ function createInterface (entity, apiUrl, headers) {
           headers
         )
         assignDownloadedDataToEntity(entity, response)
+        entity.id = entity.data[entity.definition.primaryKey]
         return response
       } else {
         const requests = getSaveRequests(entity)
@@ -439,5 +441,4 @@ function assignDownloadedDataToEntity (entity, response) {
   delete copy['@odata.context']
   convertDates(toRaw(entity.definition), copy)
   setLoadedData(entity, copy)
-  entity.id = entity.data[entity.definition.primaryKey]
 }

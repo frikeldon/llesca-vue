@@ -27,6 +27,8 @@ function createEntityStructure ({
   definition,
   id = null,
   data = {},
+  child = undefined,
+  detail = undefined,
   state = 'create',
   $parent = null,
   $root = null,
@@ -36,7 +38,7 @@ function createEntityStructure ({
     definition: markRaw(definition),
     id,
     data,
-    child: Array.isArray(definition.children)
+    child: child ?? Array.isArray(definition.children)
       ? Object.fromEntries(
         definition.children.map(childSchema => [
           childSchema.navigationKey || childSchema.entityName,
@@ -44,7 +46,7 @@ function createEntityStructure ({
         ])
       )
       : null,
-    detail: Array.isArray(definition.details)
+    detail: detail ?? Array.isArray(definition.details)
       ? Object.fromEntries(
         definition.details.map(detail => [
           detail.navigationKey || detail.entityName,
@@ -55,12 +57,15 @@ function createEntityStructure ({
     state,
     $parent,
     $root,
-    $base
+    $base,
+    get primaryValue () {
+      return this.data[this.definition.primaryKey]
+    }
   }
 }
 
 function cloneEntityStructure (source, { $parent = null, $root = null, $base = source } = {}) {
-  const clone = {
+  const clone = createEntityStructure({
     definition: source.definition,
     id: source.id,
     data: JSON.parse(JSON.stringify(source.data)),
@@ -72,7 +77,7 @@ function cloneEntityStructure (source, { $parent = null, $root = null, $base = s
     $parent,
     $root,
     $base
-  }
+  })
   clone.$root = $root ?? clone
 
   clone.child = source.child
@@ -148,7 +153,7 @@ function createInterface (entity, apiUrl, headers) {
         headers
       )
       assignDownloadedDataToEntity(entity, response)
-      entity.id = entity.data[entity.definition.primaryKey]
+      entity.id = entity.primaryValue
     },
 
     async save () {
@@ -160,7 +165,7 @@ function createInterface (entity, apiUrl, headers) {
           headers
         )
         assignDownloadedDataToEntity(entity, response)
-        entity.id = entity.data[entity.definition.primaryKey]
+        entity.id = entity.primaryValue
         return response
       } else {
         const requests = getSaveRequests(entity)
@@ -341,7 +346,7 @@ function getSaveRequests (entity, prefix = null) {
     }]
   } else {
     const requests = []
-    const key = entity.data[entity.definition.primaryKey]
+    const key = entity.primaryValue
     if (entity.state === 'update') {
       requests.push({
         atomicityGroup: 'saveEntity',
@@ -353,7 +358,7 @@ function getSaveRequests (entity, prefix = null) {
     }
     for (const name in entity.child) {
       for (const entityChild of entity.child[name].deletedEntities) {
-        const childKey = entityChild.data[entityChild.definition.primaryKey]
+        const childKey = entityChild.primaryValue
         requests.push({
           atomicityGroup: 'saveEntity',
           id: `saveEntity/${requestId}/d-${name}/${entityChild.definition.entityName}(${entityChild.id})-delete`,
@@ -389,7 +394,7 @@ function assignForeignKey (parentEntity, childName, data) {
     childDefinition.foreingKey &&
     parentEntity.definition.primaryKey
   ) {
-    newData[childDefinition.foreingKey] = parentEntity.data[parentEntity.definition.primaryKey]
+    newData[childDefinition.foreingKey] = parentEntity.primaryValue
   }
   return newData
 }

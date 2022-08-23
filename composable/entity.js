@@ -165,7 +165,9 @@ function createInterface (entity, apiUrl, headers) {
       } else {
         const requests = getSaveRequests(entity)
         if (requests?.length > 0) {
-          return await requestBatch(apiUrl, requests, headers)
+          const response = await requestBatch(apiUrl, requests, headers)
+          assignDownloadedBatchDataToEntity(entity, response)
+          return response
         }
       }
     },
@@ -326,10 +328,10 @@ function getRequestData (entity, { removePrimaryKey }) {
 }
 
 function getSaveRequests (entity, prefix = null) {
+  const requestId = prefix
+    ? `${prefix}/${entity.definition.entityName}(${entity.id})`
+    : `${entity.definition.entityName}(${entity.id})`
   if (entity.state === 'create') {
-    const requestId = prefix
-      ? `${prefix}/${entity.definition.entityName}`
-      : entity.definition.entityName
     return [{
       atomicityGroup: 'saveEntity',
       id: `saveEntity/${requestId}-create`,
@@ -340,9 +342,6 @@ function getSaveRequests (entity, prefix = null) {
   } else {
     const requests = []
     const key = entity.data[entity.definition.primaryKey]
-    const requestId = prefix
-      ? `${prefix}/${entity.definition.entityName}(${key})`
-      : `${entity.definition.entityName}(${key})`
     if (entity.state === 'update') {
       requests.push({
         atomicityGroup: 'saveEntity',
@@ -357,14 +356,14 @@ function getSaveRequests (entity, prefix = null) {
         const childKey = entityChild.data[entityChild.definition.primaryKey]
         requests.push({
           atomicityGroup: 'saveEntity',
-          id: `saveEntity/${requestId}/${entityChild.definition.entityName}(${childKey})-delete`,
+          id: `saveEntity/${requestId}/d-${name}/${entityChild.definition.entityName}(${entityChild.id})-delete`,
           method: 'DELETE',
           url: `${entityChild.definition.entityName}(${childKey})`
         })
       }
       for (let index = 0; index < entity.child[name].entities.length; index += 1) {
         const entityChild = entity.child[name].entities[index]
-        const childRequests = getSaveRequests(entityChild, `${requestId}/${name}/${index}`)
+        const childRequests = getSaveRequests(entityChild, `${requestId}/e-${name}`)
         if (childRequests?.length > 0) {
           requests.push(...childRequests)
         }
@@ -441,4 +440,44 @@ function assignDownloadedDataToEntity (entity, response) {
   delete copy['@odata.context']
   convertDates(toRaw(entity.definition), copy)
   setLoadedData(entity, copy)
+}
+
+function traverseBatchRequestPath (entity, path) {
+  let currentPath = path
+  let container = null
+  while (currentPath) {
+    const entityName = `${entity.definition.entityName}(${entity.id})`
+    if (currentPath === entityName) {
+      return { entity, container }
+    } else if (currentPath.startsWith(`${entityName}/`)) {
+      currentPath = currentPath.substring(entityName.length + 1)
+    } else if (/^(e|d)-\w+\//.test(currentPath)) {
+      const [found, type, name] = currentPath.match(/^(e|d)-(\w+)\//)
+      const containerName = type === 'd' ? 'deletedEntities' : 'entities'
+      container = entity.child[name][containerName]
+      currentPath = currentPath.substring(found.length)
+      const [, entityId] = currentPath.match(/^\w+\((\d+)\)/)
+      entity = container.find(child => String(child.id) === entityId)
+    } else {
+      throw new Error(`Invalid Batch Request Path '${path}'`)
+    }
+  }
+  throw new Error(`Invalid Batch Request Path '${path}'`)
+}
+
+function assignDownloadedBatchDataToEntity (entity, responses = []) {
+  for (const response of responses) {
+    const [, path, action] = response.id.match(/^saveEntity\/(.*)-(create|update|delete)$/)
+    if (action === 'delete') {
+      const { target = entity, container } = traverseBatchRequestPath(entity, path)
+      const index = container.indexOf(target)
+      container.splice(index, 0)
+    } else {
+      const { target = entity } = traverseBatchRequestPath(entity, path)
+      if (response.body) {
+        setLoadedData(target, response.body)
+      }
+      target.state = 'read'
+    }
+  }
 }

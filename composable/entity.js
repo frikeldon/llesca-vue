@@ -38,22 +38,22 @@ function createEntityStructure ({
     definition: markRaw(definition),
     id,
     data,
-    child: child ?? Array.isArray(definition.children)
+    child: child ?? (Array.isArray(definition.children)
       ? Object.fromEntries(
         definition.children.map(childSchema => [
           childSchema.navigationKey || childSchema.entityName,
           { nextId: 1, entities: [], deletedEntities: [] }
         ])
       )
-      : null,
-    detail: detail ?? Array.isArray(definition.details)
+      : null),
+    detail: detail ?? (Array.isArray(definition.details)
       ? Object.fromEntries(
         definition.details.map(detail => [
           detail.navigationKey || detail.entityName,
           null
         ])
       )
-      : null,
+      : null),
     state,
     $parent,
     $root,

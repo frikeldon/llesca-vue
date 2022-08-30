@@ -347,7 +347,7 @@ function setLoadedData (entity, data) {
   entity.state = STATE.READ
 }
 
-function getRequestData (entity, { removePrimaryKey }) {
+function getRequestData (entity, { removePrimaryKey } = {}) {
   const data = { ...entity.data }
   for (const name in entity.child) {
     data[name] = []

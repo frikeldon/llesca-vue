@@ -1,7 +1,14 @@
 import { reactive, markRaw, readonly, toRaw } from 'vue'
-import { requestGet, requestPost, requestBatch } from '../utils/odata.js'
+import { requestGet, requestPost, requestDelete, requestBatch } from '../utils/odata.js'
 
 const internalState = Symbol('state')
+
+const STATE = {
+  CREATE: 'create',
+  READ: 'read',
+  UPDATE: 'update',
+  DELETED: 'deleted'
+}
 
 /**
  * Permite descargar, gestionar y guardar los datos de una entidad odata y sus entidades descendientes.
@@ -29,7 +36,7 @@ function createEntityStructure ({
   data = {},
   child = undefined,
   detail = undefined,
-  state = 'create',
+  state = STATE.CREATE,
   $parent = null,
   $root = null,
   $base = null
@@ -146,7 +153,7 @@ function createInterface (entity, apiUrl, headers) {
 
     /* Sincronizacion de datos con el servidor */
 
-    async load (id) {
+    async requestLoad (id) {
       const response = await requestGet(
         [apiUrl, `${entity.definition.entityName}(${id})`],
         { $expand: getExpandQuery(toRaw(entity.definition)) },
@@ -156,8 +163,8 @@ function createInterface (entity, apiUrl, headers) {
       entity.id = entity.primaryValue
     },
 
-    async save () {
-      if (entity.state === 'create') {
+    async requestSave () {
+      if (entity.state === STATE.CREATE) {
         const response = await requestPost(
           [apiUrl, entity.definition.entityName],
           getRequestData(entity, { removePrimaryKey: true }),
@@ -166,14 +173,29 @@ function createInterface (entity, apiUrl, headers) {
         )
         assignDownloadedDataToEntity(entity, response)
         entity.id = entity.primaryValue
+        entity.state = STATE.READ
         return response
       } else {
         const requests = getSaveRequests(entity)
         if (requests?.length > 0) {
           const response = await requestBatch(apiUrl, requests, headers)
           assignDownloadedBatchDataToEntity(entity, response)
+          entity.state = STATE.READ
           return response
         }
+      }
+    },
+
+    async requestDelete () {
+      if (entity.state === STATE.READ || entity.state === STATE.UPDATE) {
+        const primary = entity.data[entity.definition.primaryKey]
+        const response = requestDelete(
+          [apiUrl, `${entity.definition.entityName}(${primary})`],
+          null,
+          headers
+        )
+        entity.state = STATE.DELETED
+        return response
       }
     },
 
@@ -194,14 +216,14 @@ function createInterface (entity, apiUrl, headers) {
       entity.detail[name] = toRaw(value)
     },
 
-    /* Gestion de datos de los hijos */
+    /* Gestion de datos de los descendientes */
 
     createChildData (name, data) {
       entity.child[name].entities.push(createEntityStructure({
         definition: markRaw(entity.definition.children.find(childDefinition => childDefinition.entityName === name)),
         id: entity.child[name].nextId++,
         data: assignForeignKey(entity, name, data),
-        state: 'create',
+        state: STATE.CREATE,
         $parent: entity,
         $root: entity.$root
       }))
@@ -216,12 +238,12 @@ function createInterface (entity, apiUrl, headers) {
     deleteChildData (name, id) {
       const index = entity.child[name].entities.findIndex(entity => entity.id === id)
       const [child] = entity.child[name].entities.splice(index, 1)
-      if (child.state !== 'create') {
+      if (child.state !== STATE.CREATE) {
         entity.child[name].deletedEntities.push(child)
       }
     },
 
-    /* Gestion de los hijos */
+    /* Gestion entidades descendientes */
 
     createNewChild (name) {
       const childEntity = reactive(createEntityStructure({
@@ -231,7 +253,7 @@ function createInterface (entity, apiUrl, headers) {
         )),
         id: null,
         data: assignForeignKey(entity, name, {}),
-        state: 'create',
+        state: STATE.CREATE,
         $parent: entity,
         $root: entity.$root
       }))
@@ -260,6 +282,12 @@ function createInterface (entity, apiUrl, headers) {
         const replanted = replant(toRaw(clone[internalState]), entity)
         entity.child[name].entities[index] = replanted
       }
+    },
+
+    removeChild (name, id) {
+      const index = entity.child[name].entities.findIndex(entity => entity.id === id)
+      const [childEntity] = entity.child[name].entities.splice(index, 1)
+      return createInterface(childEntity, apiUrl, headers)
     }
   }
 }
@@ -315,7 +343,7 @@ function setLoadedData (entity, data) {
     delete data[navigation]
   }
   entity.data = data
-  entity.state = 'read'
+  entity.state = STATE.READ
 }
 
 function getRequestData (entity, { removePrimaryKey }) {
@@ -336,7 +364,7 @@ function getSaveRequests (entity, prefix = null) {
   const requestId = prefix
     ? `${prefix}/${entity.definition.entityName}(${entity.id})`
     : `${entity.definition.entityName}(${entity.id})`
-  if (entity.state === 'create') {
+  if (entity.state === STATE.CREATE) {
     return [{
       atomicityGroup: 'saveEntity',
       id: `saveEntity/${requestId}-create`,
@@ -347,7 +375,7 @@ function getSaveRequests (entity, prefix = null) {
   } else {
     const requests = []
     const key = entity.primaryValue
-    if (entity.state === 'update') {
+    if (entity.state === STATE.UPDATE) {
       requests.push({
         atomicityGroup: 'saveEntity',
         id: `saveEntity/${requestId}-update`,
@@ -379,8 +407,8 @@ function getSaveRequests (entity, prefix = null) {
 }
 
 function markAsUpdated (entity) {
-  if (entity.state !== 'create') {
-    entity.state = 'update'
+  if (entity.state !== STATE.CREATE) {
+    entity.state = STATE.UPDATE
   }
 }
 
@@ -482,7 +510,7 @@ function assignDownloadedBatchDataToEntity (entity, responses = []) {
       if (response.body) {
         setLoadedData(target, response.body)
       }
-      target.state = 'read'
+      target.state = STATE.READ
     }
   }
 }

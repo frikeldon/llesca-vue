@@ -42,3 +42,4 @@ export { useUrl } from './composable/url.js'
 export { useValidations } from './composable/validations.js'
 
 export * as odata from './utils/odata.js'
+export * as object from './utils/object.js'

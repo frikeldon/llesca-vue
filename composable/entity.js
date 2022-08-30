@@ -1,5 +1,6 @@
 import { reactive, markRaw, readonly, toRaw } from 'vue'
 import { requestGet, requestPost, requestDelete, requestBatch } from '../utils/odata.js'
+import { clone as cloneObject } from '../utils/object.js'
 
 const internalState = Symbol('state')
 
@@ -75,10 +76,10 @@ function cloneEntityStructure (source, { $parent = null, $root = null, $base = s
   const clone = createEntityStructure({
     definition: source.definition,
     id: source.id,
-    data: JSON.parse(JSON.stringify(source.data)),
+    data: cloneObject(source.data),
     child: null,
     detail: source.detail
-      ? JSON.parse(JSON.stringify(source.detail))
+      ? cloneObject(source.detail)
       : null,
     state: source.state,
     $parent,
@@ -469,7 +470,7 @@ function convertDates (definition, data) {
 }
 
 function assignDownloadedDataToEntity (entity, response) {
-  const copy = JSON.parse(JSON.stringify(response))
+  const copy = cloneObject(response)
   delete copy['@odata.context']
   convertDates(toRaw(entity.definition), copy)
   setLoadedData(entity, copy)

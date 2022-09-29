@@ -16,7 +16,7 @@ export function useValidations () {
   }
 
   const formValues = computed(() => Object.fromEntries(
-    [...fields.entries()].map(([name, { value }]) =>
+    Array.from(fields.entries()).map(([name, { value }]) =>
       [name, unref(value)]
     )
   ))
@@ -129,8 +129,8 @@ export function useValidations () {
   }
 
   return {
-    fields: computed(() => [...fields.keys()]),
-    validations: computed(() => [...validations.keys()]),
+    fields: computed(() => Array.from(fields.keys())),
+    validations: computed(() => Array.from(validations.keys())),
     values: formValues,
     createField,
     createValidation,

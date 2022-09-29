@@ -10,7 +10,7 @@ class HttpResponseError extends Error {
 
 class HttpBatchResponseError extends Error {
   constructor (response, responses) {
-    super(`Bad HTTP response status ${response.statusText}'`)
+    super(`Bad HTTP response status '${response.statusText || response.status}'`)
     this.name = 'HttpError'
     this.status = response.status
     this.statusText = response.statusText

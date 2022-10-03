@@ -1,4 +1,4 @@
-import { getCurrentScope, effectScope, reactive, computed } from 'vue'
+import { getCurrentScope, effectScope, shallowReactive, reactive, computed } from 'vue'
 import { useEntityCollection } from './entity-collection.js'
 import { internalState } from './internal.js'
 import { entitySyncData } from './sync-data.js'
@@ -20,8 +20,8 @@ export function useEntity (
     return scope.run(() => ({
       scope,
       definition,
-      storedProperties: reactive({}),
-      changedProperties: reactive({}),
+      storedProperties: shallowReactive({}),
+      changedProperties: shallowReactive({}),
       properties: null,
       children: null,
       details: reactive({}),

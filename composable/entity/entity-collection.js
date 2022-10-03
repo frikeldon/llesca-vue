@@ -1,4 +1,4 @@
-import { getCurrentScope, reactive, computed } from 'vue'
+import { getCurrentScope, shallowReactive, computed } from 'vue'
 import { useEntity } from './entity.js'
 import { entitySyncData } from './sync-data.js'
 import { internalState } from './internal.js'
@@ -12,9 +12,9 @@ export function useEntityCollection (
   } = {}
 ) {
   const entityCollection = new Proxy(scope.run(() => {
-    const storedEntities = reactive([])
-    const newEntities = reactive([])
-    const deletedIndices = reactive(new Set())
+    const storedEntities = shallowReactive([])
+    const newEntities = shallowReactive([])
+    const deletedIndices = shallowReactive(new Set())
 
     const remainingEntities = computed(() =>
       storedEntities.filter((_, index) => !deletedIndices.has(index))

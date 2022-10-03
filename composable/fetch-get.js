@@ -1,9 +1,9 @@
-import { shallowRef, ref, computed, unref, watch } from 'vue'
+import { shallowRef, computed, unref, watch } from 'vue'
 import { useUrl } from './url.js'
 
 export function useFetchGet (urlParts, getParams, headers, options) {
-  const status = ref(null)
-  const isLoading = ref(false)
+  const status = shallowRef(null)
+  const isLoading = shallowRef(false)
   const data = shallowRef(null)
   const errorHandlers = []
 

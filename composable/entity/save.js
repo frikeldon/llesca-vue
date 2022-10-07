@@ -10,24 +10,27 @@ import { internalState } from './internal.js'
 export async function entitySave (entity, apiUrl, headers) {
   if (entity instanceof useEntity) {
     const requests = entityBatchRequests(entity)
-    const responses = await requestBatch(apiUrl, requests, headers)
-    assignResponseDataToEntity(entity, responses)
-    entityConsolidate(entity)
 
-    const state = entity[internalState]
+    if (requests.length > 0) {
+      const responses = await requestBatch(apiUrl, requests, headers)
+      assignResponseDataToEntity(entity, responses)
+      entityConsolidate(entity)
 
-    if (state.parent) {
-      const parentState = state.parent[internalState]
+      const state = entity[internalState]
 
-      const newIndex = parentState.newEntities.indexOf(entity)
-      if (newIndex > -1) {
-        parentState.newEntities.splice(newIndex, 1)
-        parentState.storedEntities.push(entity)
+      if (state.parent) {
+        const parentState = state.parent[internalState]
+
+        const newIndex = parentState.newEntities.indexOf(entity)
+        if (newIndex > -1) {
+          parentState.newEntities.splice(newIndex, 1)
+          parentState.storedEntities.push(entity)
+        }
       }
-    }
 
-    if (state.base) {
-      entitySyncState(state.base, entity)
+      if (state.base) {
+        entitySyncState(state.base, entity)
+      }
     }
 
     return true
@@ -46,8 +49,8 @@ function entityBatchRequests (entity, prefix = '') {
     if (primaryValue == null) {
       const body = entityData(entity, { withoutDetails: true })
       if (foreingKey && state.parent) {
-        const parentState = entity[internalState]
-        body[foreingKey] = state.parent[parentState.definition.primaryKey]
+        const parentState = state.parent[internalState].parent[internalState]
+        body[foreingKey] = parentState.properties[parentState.definition.primaryKey].value
       }
       return [{
         atomicityGroup: 'entitySave',
@@ -112,7 +115,7 @@ function traverseEntity (entity, path) {
     return entity
   }
 
-  const [match, navigation, index] = path.match(/^([^[]+)\[(\d+)]/)
+  const [match, navigation, index] = path.match(/^\/([^[]+)\[(\d+)]/)
   return traverseEntity(
     entity[navigation][index],
     path.substring(match.length)

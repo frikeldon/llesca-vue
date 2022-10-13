@@ -10,6 +10,14 @@ import FieldTag from './component/field-tag/index.js'
 import FieldText from './component/field-text/index.js'
 import StackDraggable from './component/stack-draggable/index.js'
 
+import * as entity from './composable/entity/index.js'
+import * as fetchGet from './composable/fetch-get.js'
+import * as optionsLoader from './composable/options-loader.js'
+import * as url from './composable/url.js'
+import * as validations from './composable/validations.js'
+import * as odata from './utils/odata.js'
+import * as object from './utils/object.js'
+
 export const component = {
   FieldCombo,
   FieldComboAsync,
@@ -29,12 +37,6 @@ export function install (app, { prefix = 'llesca' } = {}) {
   }
 }
 
-export default {
-  install,
-  Llesca: component,
-  version: packageJson.version
-}
-
 export * from './composable/entity/index.js'
 export * from './composable/fetch-get.js'
 export * from './composable/options-loader.js'
@@ -43,3 +45,16 @@ export * from './composable/validations.js'
 
 export * as odata from './utils/odata.js'
 export * as object from './utils/object.js'
+
+export default {
+  install,
+  Llesca: component,
+  version: packageJson.version,
+  ...entity,
+  ...fetchGet,
+  ...optionsLoader,
+  ...url,
+  ...validations,
+  odata,
+  object
+}

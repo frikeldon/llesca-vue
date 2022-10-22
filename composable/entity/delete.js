@@ -25,7 +25,7 @@ export async function entityDelete (entity, apiUrl, headers) {
           parentState.storedEntities.splice(storedIndex, 1)
           parentState.deletedIndices.delete(storedIndex)
 
-          const indices = Array.from(parentState.deletedIndices)
+          const indices = Int32Array.from(parentState.deletedIndices)
             .filter(index => index > storedIndex)
             .sort()
           for (const currentIndex of indices) {

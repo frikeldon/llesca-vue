@@ -21,7 +21,7 @@ export function entityConsolidate (entity) {
   }
 
   if (entity instanceof useEntityCollection) {
-    const sortedIndices = Array.from(state.deletedIndices).sort().reverse()
+    const sortedIndices = Int32Array.from(state.deletedIndices).sort().reverse()
     for (const index of sortedIndices) {
       const [deletedEntity] = state.storedEntities.splice(index, 1)
       deletedEntity[internalState].scope.stop()

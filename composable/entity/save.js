@@ -41,17 +41,13 @@ export async function entitySave (entity, apiUrl, headers) {
 
 function entityBatchRequests (entity, prefix = '') {
   const state = entity[internalState]
-  const { entityName, primaryKey, foreingKey } = state.definition
+  const { entityName, primaryKey } = state.definition
 
   if (entity instanceof useEntity) {
     const primaryValue = entity[primaryKey]
 
     if (primaryValue == null) {
       const body = entityData(entity, { withoutDetails: true })
-      if (foreingKey && state.parent) {
-        const parentState = state.parent[internalState].parent[internalState]
-        body[foreingKey] = parentState.properties[parentState.definition.primaryKey].value
-      }
       return [{
         atomicityGroup: 'entitySave',
         id: `${prefix}/create`,

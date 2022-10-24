@@ -82,13 +82,27 @@ const handler = {
 
 const collectionPrototype = {
   create (target, receiver) {
-    return useEntity(target.definition, {
+    const child = useEntity(target.definition, {
       scope: target.scope,
       root: target.root,
       parent: receiver
     })
+
+    const { foreingKey } = target.definition
+    if (foreingKey && target.parent) {
+      const parentState = target.parent[internalState]
+      child[foreingKey] = parentState.properties[parentState.definition.primaryKey].value
+    }
+
+    return child
   },
   add (target, receiver, value) {
+    const { foreingKey } = target.definition
+    if (foreingKey && target.parent && value[foreingKey] === undefined) {
+      const parentState = target.parent[internalState]
+      value[foreingKey] = parentState.properties[parentState.definition.primaryKey].value
+    }
+
     if (value instanceof useEntity && value[internalState].root === target.root) {
       target.newEntities.push(value)
       return value

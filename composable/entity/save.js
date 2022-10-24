@@ -101,7 +101,11 @@ function assignResponseDataToEntity (entity, responses) {
     if (response.body) {
       const [, path] = response.id.match(/^(.*)\/(?:create|update|delete)$/)
       const target = traverseEntity(entity, path)
-      entitySyncData(target, response.body)
+      const valuesWithDetails = {
+        ...response.body,
+        ...target[internalState].details
+      }
+      entitySyncData(target, valuesWithDetails)
     }
   }
 }

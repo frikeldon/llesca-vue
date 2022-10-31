@@ -38,7 +38,9 @@ export function useEntity (
       key,
       target.scope.run(() => computed({
         get () {
-          return target.changedProperties[key] ?? target.storedProperties[key]
+          return key in target.changedProperties
+            ? target.changedProperties[key]
+            : target.storedProperties[key]
         },
         set (value) {
           if (target.storedProperties[key] === value) {

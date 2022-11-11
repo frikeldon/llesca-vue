@@ -15,7 +15,7 @@ export async function entityDelete (entity, apiUrl, headers) {
     const primaryValue = entity[primaryKey]
 
     if (primaryValue != null) {
-      await requestDelete([apiUrl, null, `${entityName}(${primaryValue})`], headers)
+      await requestDelete([apiUrl, null, `${entityName}(${primaryValue})`], null, headers)
 
       if (state.parent) {
         const parentState = state.parent[internalState]

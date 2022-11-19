@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { reactive, computed, watchEffect, unref } from 'vue'
 import { useFetchGet } from './fetch-get.js'
 
 export function useOptionsLoader (apiUrl, entityName, valueKey, textKey, getParams, headers) {
@@ -6,14 +6,29 @@ export function useOptionsLoader (apiUrl, entityName, valueKey, textKey, getPara
   const textKeyUnref = unref(textKey)
   const getParamsUnref = unref(getParams)
 
-  const internalGetParams = computed(() => {
-    const params = {}
-    params.$orderby = textKeyUnref
-    for (const name in getParamsUnref) {
-      params[name] = unref(getParamsUnref[name])
+  const internalGetParams = reactive({})
+  watchEffect(() => {
+    const currentSelect = `${valueKeyUnref},${textKeyUnref}`
+    if (internalGetParams.$select !== currentSelect) {
+      internalGetParams.$select = currentSelect
     }
-    params.$select = `${valueKeyUnref},${textKeyUnref}`
-    return params
+
+    if (internalGetParams.$orderby !== textKeyUnref) {
+      internalGetParams.$orderby = textKeyUnref
+    }
+
+    for (const name in getParamsUnref) {
+      const currentParam = unref(getParamsUnref[name])
+      if (internalGetParams[name] !== currentParam) {
+        internalGetParams[name] = currentParam
+      }
+    }
+
+    for (const name in internalGetParams) {
+      if (!['$orderby', '$select', ...Object.keys(getParamsUnref)].includes(name)) {
+        delete internalGetParams[name]
+      }
+    }
   })
 
   const { status, isLoading, data, error, load } = useFetchGet([apiUrl, entityName], internalGetParams, headers)

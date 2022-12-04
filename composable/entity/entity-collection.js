@@ -29,10 +29,11 @@ export function useEntityCollection (
       deletedIndices,
       remainingEntities,
       entities,
-      root: root ?? entityCollection,
+      root,
       parent
     }
   }), handler)
+  entityCollection[internalState].root = root ?? entityCollection
   return entityCollection
 }
 

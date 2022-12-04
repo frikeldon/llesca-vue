@@ -35,7 +35,7 @@ export function entitySyncData (entity, data) {
       const remainingData = Array.from(data)
 
       for (let index = 0; index < state.storedEntities.length; index += 1) {
-        const entity = state.storedEntities.value[index]
+        const entity = state.storedEntities[index]
         const primaryValue = entity[primaryKey]
         const dataIndex = remainingData.findIndex(data => data[primaryKey] === primaryValue)
 

@@ -11,6 +11,7 @@ export async function entityLoad (entity, apiUrl, headers, id) {
   entityClear(entity)
   entitySyncData(entity, response)
   entityConsolidate(entity)
+  return response
 }
 
 export function useEntityFromId (definition, apiUrl, headers, id) {
@@ -20,12 +21,35 @@ export function useEntityFromId (definition, apiUrl, headers, id) {
   return { entity, loaded }
 }
 
+export async function entityLoadCollection (entityCollection, apiUrl, headers, getParams) {
+  const response = await requestLoadCollection(entityCollection[internalState].definition, apiUrl, headers, getParams)
+  entityClear(entityCollection)
+  entitySyncData(entityCollection, response.value)
+  entityConsolidate(entityCollection)
+  return response
+}
+
 async function requestLoad (definition, apiUrl, headers, id) {
   const response = await requestGet(
     [apiUrl, `${definition.entityName}(${id})`],
     {
       $select: getKeyList(definition),
       $expand: getExpandQuery(definition)
+    },
+    headers
+  )
+  delete response['@odata.context']
+  replaceDates(definition, response)
+  return response
+}
+
+async function requestLoadCollection (definition, apiUrl, headers, getParams) {
+  const response = await requestGet(
+    [apiUrl, definition.entityName],
+    {
+      $select: getKeyList(definition),
+      $expand: getExpandQuery(definition),
+      ...getParams
     },
     headers
   )

@@ -97,7 +97,7 @@ function getExpandQuery (definition) {
     : undefined
 }
 
-function replaceDates (definition, data) {
+export function replaceDates (definition, data) {
   if (Array.isArray(definition.dateKeys)) {
     for (const key of definition.dateKeys) {
       if (typeof data[key] === 'string') {

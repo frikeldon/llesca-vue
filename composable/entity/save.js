@@ -5,6 +5,7 @@ import { entityData } from './data.js'
 import { entityConsolidate } from './consolidate.js'
 import { entitySyncData } from './sync-data.js'
 import { entitySyncState } from './sync-state.js'
+import { replaceDates } from './load.js'
 import { internalState } from './internal.js'
 
 export async function entitySave (entity, apiUrl, headers) {
@@ -105,6 +106,7 @@ function assignResponseDataToEntity (entity, responses) {
         ...response.body,
         ...target[internalState].details
       }
+      replaceDates(entity[internalState].definition, valuesWithDetails)
       entitySyncData(target, valuesWithDetails)
     }
   }

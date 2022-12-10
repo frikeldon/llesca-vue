@@ -136,7 +136,7 @@ watch(() => $props.options, value => {
     if (existingValues.length !== $props.modelValue.length) {
       $emit('update:modelValue', existingValues)
     }
-  } else {
+  } else if ($props.modelValue != null) {
     const hasModelValue = value.some(option => option.value === $props.modelValue)
     if (!hasModelValue) {
       $emit('update:modelValue', null)

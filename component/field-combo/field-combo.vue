@@ -126,7 +126,15 @@ function handleBlur ($event) {
 
 watch(() => $props.disabled, value => {
   if (value && $props.clearValueOnDisabled) {
-    $emit('update:modelValue', $props.multiple ? [] : null)
+    if ($props.multiple) {
+      if ($props.modelValue?.length > 0) {
+        $emit('update:modelValue', [])
+      }
+    } else {
+      if ($props.modelValue != null) {
+        $emit('update:modelValue', null)
+      }
+    }
   }
 })
 
@@ -138,7 +146,7 @@ watch(() => $props.options, value => {
     }
   } else if ($props.modelValue != null) {
     const hasModelValue = value.some(option => option.value === $props.modelValue)
-    if (!hasModelValue) {
+    if (!hasModelValue && $props.modelValue != null) {
       $emit('update:modelValue', null)
     }
   }

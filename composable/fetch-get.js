@@ -1,5 +1,6 @@
 import { shallowRef, computed, unref, watch } from 'vue'
 import { useUrl } from './url.js'
+import debounce from '../utils/debounce.js'
 
 export function useFetchGet (urlParts, getParams, headers, options) {
   const status = shallowRef(null)
@@ -69,9 +70,11 @@ export function useFetchGet (urlParts, getParams, headers, options) {
     isLoading.value = false
   }
 
+  const debouncedLoad = debounce(load, unref(options)?.wait)
+
   watch(
     [url, internalHeaders],
-    () => !unref(unref(options)?.manual) && load(),
+    () => !unref(unref(options)?.manual) && debouncedLoad(),
     { immediate: true }
   )
 

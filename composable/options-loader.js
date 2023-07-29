@@ -2,12 +2,12 @@ import { reactive, computed, watchEffect, unref } from 'vue'
 import { useFetchGet } from './fetch-get.js'
 
 export function useOptionsLoader (apiUrl, entityName, valueKey, textKey, getParams, headers) {
-  const valueKeyUnref = unref(valueKey)
-  const textKeyUnref = unref(textKey)
-  const getParamsUnref = unref(getParams)
-
   const internalGetParams = reactive({})
   watchEffect(() => {
+    const valueKeyUnref = unref(valueKey)
+    const textKeyUnref = unref(textKey)
+    const getParamsUnref = unref(getParams)
+
     const currentSelect = `${valueKeyUnref},${textKeyUnref}`
     if (internalGetParams.$select !== currentSelect) {
       internalGetParams.$select = currentSelect
@@ -34,6 +34,9 @@ export function useOptionsLoader (apiUrl, entityName, valueKey, textKey, getPara
   const { status, isLoading, data, error, load } = useFetchGet([apiUrl, entityName], internalGetParams, headers)
 
   const options = computed(() => {
+    const valueKeyUnref = unref(valueKey)
+    const textKeyUnref = unref(textKey)
+
     const rows = data.value?.value || []
     return rows.map(row => ({
       value: row[valueKeyUnref],

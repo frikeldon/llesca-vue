@@ -62,7 +62,7 @@ function getKeyList (entity) {
   if (Array.isArray(entity.keys) && entity.keys.length > 0) {
     return Array.isArray(entity.ignoredKeys) && entity.ignoredKeys.length > 0
       ? entity.keys.filter(key => !entity.ignoredKeys.includes(key)).join()
-      : undefined
+      : entity.keys
   }
 }
 

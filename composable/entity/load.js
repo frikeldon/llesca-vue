@@ -54,7 +54,9 @@ async function requestLoadCollection (definition, apiUrl, headers, getParams) {
     headers
   )
   delete response['@odata.context']
-  replaceDates(definition, response)
+  for (const item of response.value) {
+    replaceDates(definition, item)
+  }
   return response
 }
 
